@@ -1,2 +1,8 @@
 pyrightconfig.json
+__pycache__
+
+# user data folder
 .data
+
+# folder for test files i use mid writing
+.test

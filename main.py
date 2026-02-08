@@ -1,25 +1,24 @@
-from os import name, path
+import json
 from playwright.sync_api import sync_playwright
-import time
+from utils.scrape import scrapeFromTwitter
 
-def twitterLogin(browser):
-    page = browser.new_page()
-    time.sleep(2)
-    page.get_by_role("textbox").fill()
-    page.get_by_role('button', name='Dalej').click()
-    time.sleep(2)
-    page.get_by_role("password").fill() 
-    page.get_by_role("button",name="Zaloguj się").click()
-    time.sleep(4)
+with open(".data/userFingerprint.json","r") as fingerPrintFile:
+    userFingerpirintData = json.load(fingerPrintFile)
 
+with open(".data/userFollowed.json","r") as followedProfilesFile:
+    userFollowedData = json.load(followedProfilesFile)
+    userFollowed = userFollowedData.get("accounts")
+    
+with sync_playwright() as playwright:
+    scrapedData = scrapeFromTwitter(playwright,userFingerpirintData,userFollowed)
+    print("Done Scraping :D")
 
+    # i know this is silly but it's just for test
+    with open(".test/index.html","w") as firstIndex:
+        firstIndex.write(scrapedData[0])
 
+    with open(".test/index2.html","w") as secondIndex:
+        secondIndex.write(scrapedData[1])
 
-with sync_playwright() as p:
-    browser = p.chromium.launch()
-    # page = browser.new_page()
-    # page.goto("https://playwright.dev")
-    # print(page.content())
-    twitterLogin(browser)
-    browser.close()
+    print("exiting")
 
