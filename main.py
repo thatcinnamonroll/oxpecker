@@ -7,7 +7,9 @@ with open(".data/userFingerprint.json","r") as fingerPrintFile:
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
     userFollowedData = json.load(followedProfilesFile)
-    userFollowed = userFollowedData.get("accounts")
+    userFollowed = []
+    for account in userFollowedData:
+        userFollowed.append(account)
     
 with sync_playwright() as playwright:
     scrapedData = scrapeFromTwitter(playwright,userFingerpirintData,userFollowed)
