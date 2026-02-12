@@ -12,7 +12,10 @@ with open(".data/userFollowed.json","r") as followedProfilesFile:
         userFollowed.append(account)
     
 with sync_playwright() as playwright:
-    scrapedData = scrapeFromTwitter(playwright,userFingerpirintData,userFollowed)
+    scrapedData = []
+    for account in userFollowed:
+        scrapedHtml = scrapeFromTwitter(playwright,userFingerpirintData,account)
+        scrapedData.append(scrapedHtml)
     print("Done Scraping :D")
 
     # i know this is silly but it's just for test
