@@ -31,6 +31,7 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
     for article in articlesHtml:
         strArticle = str(article)
 
+        # reading text in tweet
         articleSoup = BeautifulSoup(strArticle,"html.parser")
         tweetText = articleSoup.find("div", {"data-testid":"tweetText"})
         tweetList = []
@@ -43,7 +44,29 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         cleanTweet = rmTagsSoup.get_text()
         tweetList.append(cleanTweet)
         tweetStr = "".join(tweetList)
-        tweets.append(tweetStr)
+
+        # reading tweet author
+        tweetAuthorBarSoup = BeautifulSoup(strArticle,"html.parser")
+        tweetAuthorBar = tweetAuthorBarSoup.find("div",{"class":"css-175oi2r r-k4xj1c r-18u37iz r-1wtj0ep"})
+        strTweetAuthorBar = str(tweetAuthorBar)
+        authorTweetSoup = BeautifulSoup(strTweetAuthorBar,"html.parser")
+        authorTweet = authorTweetSoup.find("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+        authorTweetText = authorTweet.get_text()
+
+        # reading added media (photos as of right now)
+        tweetMediaSoup = BeautifulSoup(strArticle,"html.parser")
+        tweetMediaImgList = tweetMediaSoup.findAll("img",{"alt":"Image"})
+        tweetMediaList = []
+        for image in tweetMediaImgList:
+            tweetMediaList.append(image['src'])
+
+        # adding to tweets list
+        tweet = {}
+        tweet["text"] = tweetStr
+        tweet["author"] = authorTweetText
+        tweet["media"] = tweetMediaList
+
+        tweets.append(tweet)
 
     with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
         scrapedFile.write(str(tweets))
