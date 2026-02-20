@@ -32,19 +32,16 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         strArticle = str(article)
 
         articleSoup = BeautifulSoup(strArticle,"html.parser")
-        tweetTextHtml = articleSoup.find_all("div", {"data-testid":"tweetText"})
+        tweetText = articleSoup.find("div", {"data-testid":"tweetText"})
         tweetList = []
-
-        for tweetText in tweetTextHtml:
-            strTweetText = str(tweetText)
-            tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
-            # that span holds clean text of tweet
-            textInTweet = tweetTextSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
-            strTextInTweet = str(textInTweet)
-            rmTagsSoup = BeautifulSoup(strTextInTweet,"html.parser")
-            cleanTweet = rmTagsSoup.get_text()
-            tweetList.append(cleanTweet)
-
+        strTweetText = str(tweetText)
+        tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
+        # that span holds clean text of tweet
+        textInTweet = tweetTextSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+        strTextInTweet = str(textInTweet)
+        rmTagsSoup = BeautifulSoup(strTextInTweet,"html.parser")
+        cleanTweet = rmTagsSoup.get_text()
+        tweetList.append(cleanTweet)
         tweetStr = "".join(tweetList)
         tweets.append(tweetStr)
 
