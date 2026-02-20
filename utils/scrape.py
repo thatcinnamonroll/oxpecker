@@ -34,21 +34,18 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         articleSoup = BeautifulSoup(strArticle,"html.parser")
         tweetTextHtml = articleSoup.find_all("div", {"data-testid":"tweetText"})
         tweetList = []
-        tweetTextList = []
 
         for tweetText in tweetTextHtml:
             strTweetText = str(tweetText)
             tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
+            # that span holds clean text of tweet
             textInTweet = tweetTextSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
-            tweetList.append(textInTweet)
-
-        for tweetObject in tweetList:
-            tweetString = str(tweetObject)
-            rmTagsSoup = BeautifulSoup(tweetString,"html.parser")
+            strTextInTweet = str(textInTweet)
+            rmTagsSoup = BeautifulSoup(strTextInTweet,"html.parser")
             cleanTweet = rmTagsSoup.get_text()
-            tweetTextList.append(cleanTweet)
+            tweetList.append(cleanTweet)
 
-        tweetStr = "".join(tweetTextList)
+        tweetStr = "".join(tweetList)
         tweets.append(tweetStr)
 
     with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
