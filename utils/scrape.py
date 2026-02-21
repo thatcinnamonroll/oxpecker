@@ -24,9 +24,11 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
 
     # this is single object in tweets
 #    tweet = {
-#        "text": "", # text in tweet
-#        "author": "", # author bc tweet can be reposted from someone
-#        "media": [] } # multimedia urls
+#        "text": str, # text in tweet
+#        "author": str, # author bc tweet can be reposted from someone
+#        "media": [],  # multimedia urls
+#        "isRetweet": bool,  # is that tweet is a retweet
+#        "isPinned": bool } # is that tweet pinned
 
     for article in articlesHtml:
         strArticle = str(article)
@@ -37,8 +39,7 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         tweetList = []
         strTweetText = str(tweetText)
         tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
-        # that span holds clean text of tweet
-        textInTweet = tweetTextSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+        textInTweet = tweetTextSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})   # that span holds clean text of tweet
         strTextInTweet = str(textInTweet)
         rmTagsSoup = BeautifulSoup(strTextInTweet,"html.parser")
         cleanTweet = rmTagsSoup.get_text()
@@ -60,11 +61,27 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         for image in tweetMediaImgList:
             tweetMediaList.append(image['src'])
 
+        # cheking is it retweet or pinned post
+        isRetweet = False
+        isPinned = False
+        reTweetAndPinnedBarSoup = BeautifulSoup(strArticle,"html.parser")
+        reTweetAndPinnedBar = reTweetAndPinnedBarSoup.find("div",{"class":"css-175oi2r"})
+        strReTweetAndPinnedBar = str(reTweetAndPinnedBar)
+
+        upperTweetBarSoup = BeautifulSoup(strReTweetAndPinnedBar,"html.parser")
+#        if upperTweetBarSoup.findAll("div",{"id":"id__u731578ebyt"}) is not []: # this div only exists for pinned tweets
+#            isPinned = True
+#
+#        if upperTweetBarSoup.findAll("span",{" data-testid":"socialContext"}) is not []:
+#            isRetweet = True
+
         # adding to tweets list
         tweet = {}
         tweet["text"] = tweetStr
         tweet["author"] = authorTweetText
         tweet["media"] = tweetMediaList
+        tweet["isRetweet"] = isRetweet
+        tweet["isPinned"] = isPinned
 
         tweets.append(tweet)
 
