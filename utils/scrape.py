@@ -67,13 +67,14 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         reTweetAndPinnedBarSoup = BeautifulSoup(strArticle,"html.parser")
         reTweetAndPinnedBar = reTweetAndPinnedBarSoup.find("div",{"class":"css-175oi2r"})
         strReTweetAndPinnedBar = str(reTweetAndPinnedBar)
+#        print(strReTweetAndPinnedBar)
 
         upperTweetBarSoup = BeautifulSoup(strReTweetAndPinnedBar,"html.parser")
-#        if upperTweetBarSoup.findAll("div",{"id":"id__u731578ebyt"}) is not []: # this div only exists for pinned tweets
-#            isPinned = True
-#
-#        if upperTweetBarSoup.findAll("span",{" data-testid":"socialContext"}) is not []:
-#            isRetweet = True
+        if upperTweetBarSoup.findAll("div",{"id":"id__u731578ebyt"}): # this div only exists for pinned tweets
+            isPinned = True
+
+        if upperTweetBarSoup.findAll("span",{"data-testid":"socialContext"}): # this span only exists in that div when tweet is reposted
+            isRetweet = True
 
         # adding to tweets list
         tweet = {}
