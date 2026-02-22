@@ -34,6 +34,15 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
     for article in articlesHtml:
         strArticle = str(article)
 
+        # ad detector
+        menuButtonSoup = BeautifulSoup(strArticle,"html.parser")
+        menuButton = menuButtonSoup.find("div",{"class":"css-175oi2r r-1kkk96v"})
+        strMenuButton = str(menuButton)
+        adDetectSoup = BeautifulSoup(strMenuButton,"html.parser")
+        if adDetectSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"}):
+            print("Ad detected in feed, skiping that post")
+            continue
+
         # reading text in tweet
         articleSoup = BeautifulSoup(strArticle,"html.parser")
         tweetText = articleSoup.find("div", {"data-testid":"tweetText"})
