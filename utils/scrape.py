@@ -28,7 +28,8 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
 #        "author": str, # author bc tweet can be reposted from someone
 #        "media": [],  # multimedia urls
 #        "isRetweet": bool,  # is that tweet is a retweet
-#        "isPinned": bool } # is that tweet pinned
+#        "isPinned": bool , # is that tweet pinned
+#        "url": str } # url to that tweet
 
     for article in articlesHtml:
         strArticle = str(article)
@@ -75,6 +76,17 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         if upperTweetBarSoup.findAll("span",{"data-testid":"socialContext"}): # this span only exists in that div when tweet is reposted
             isRetweet = True
 
+        # getting tweet url
+        tweetMetadataBarSoup = BeautifulSoup(strArticle,"html.parser")
+        tweetMetadataBar = tweetMetadataBarSoup.find("div",{"class":"css-175oi2r r-zl2h9q"})
+        strTweetMetadataBar = str(tweetMetadataBar)
+        tweetPostDateSoup = BeautifulSoup(strTweetMetadataBar,"html.parser")
+        tweetPostDate = tweetAuthorBarSoup.find("a",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-xoduu5 r-1q142lx r-1w6e6rj r-9aw3ui r-3s2u2q r-1loqt21"})
+        try:
+            tweetUrl = tweetPostDate["href"]
+        except TypeError:
+            tweetUrl = None
+
         # adding to tweets list
         tweet = {}
         tweet["text"] = tweetStr
@@ -82,6 +94,7 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         tweet["media"] = tweetMediaList
         tweet["isRetweet"] = isRetweet
         tweet["isPinned"] = isPinned
+        tweet["url"] = tweetUrl
 
         tweets.append(tweet)
 
