@@ -33,10 +33,10 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
 
     for article in articlesHtml:
         strArticle = str(article)
+        articleSoup = BeautifulSoup(strArticle,"html.parser")
 
         # ad detector
-        menuButtonSoup = BeautifulSoup(strArticle,"html.parser")
-        menuButton = menuButtonSoup.find("div",{"class":"css-175oi2r r-1kkk96v"})
+        menuButton = articleSoup.find("div",{"class":"css-175oi2r r-1kkk96v"})
         strMenuButton = str(menuButton)
         adDetectSoup = BeautifulSoup(strMenuButton,"html.parser")
         if adDetectSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"}):
@@ -44,7 +44,6 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
             continue
 
         # reading text in tweet
-        articleSoup = BeautifulSoup(strArticle,"html.parser")
         tweetText = articleSoup.find("div", {"data-testid":"tweetText"})
         tweetList = []
         strTweetText = str(tweetText)
@@ -57,16 +56,14 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         tweetStr = "".join(tweetList)
 
         # reading tweet author
-        tweetAuthorBarSoup = BeautifulSoup(strArticle,"html.parser")
-        tweetAuthorBar = tweetAuthorBarSoup.find("div",{"class":"css-175oi2r r-k4xj1c r-18u37iz r-1wtj0ep"})
+        tweetAuthorBar = articleSoup.find("div",{"class":"css-175oi2r r-k4xj1c r-18u37iz r-1wtj0ep"})
         strTweetAuthorBar = str(tweetAuthorBar)
         authorTweetSoup = BeautifulSoup(strTweetAuthorBar,"html.parser")
         authorTweet = authorTweetSoup.find("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
         authorTweetText = authorTweet.get_text()
 
         # reading added media (photos as of right now)
-        tweetMediaSoup = BeautifulSoup(strArticle,"html.parser")
-        tweetMediaImgList = tweetMediaSoup.findAll("img",{"alt":"Image"})
+        tweetMediaImgList = articleSoup.findAll("img",{"alt":"Image"})
         tweetMediaList = []
         for image in tweetMediaImgList:
             tweetMediaList.append(image['src'])
@@ -74,8 +71,7 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
         # cheking is it retweet or pinned post
         isRetweet = False
         isPinned = False
-        reTweetAndPinnedBarSoup = BeautifulSoup(strArticle,"html.parser")
-        reTweetAndPinnedBar = reTweetAndPinnedBarSoup.find("div",{"class":"css-175oi2r"})
+        reTweetAndPinnedBar = articleSoup.find("div",{"class":"css-175oi2r"})
         strReTweetAndPinnedBar = str(reTweetAndPinnedBar)
 
         upperTweetBarSoup = BeautifulSoup(strReTweetAndPinnedBar,"html.parser")
@@ -86,11 +82,10 @@ def scrapeFromTwitter(playwright: Playwright,fingerPrintDict,account):
             isRetweet = True
 
         # getting tweet url
-        tweetMetadataBarSoup = BeautifulSoup(strArticle,"html.parser")
-        tweetMetadataBar = tweetMetadataBarSoup.find("div",{"class":"css-175oi2r r-zl2h9q"})
+        tweetMetadataBar = articleSoup.find("div",{"class":"css-175oi2r r-zl2h9q"})
         strTweetMetadataBar = str(tweetMetadataBar)
         tweetPostDateSoup = BeautifulSoup(strTweetMetadataBar,"html.parser")
-        tweetPostDate = tweetAuthorBarSoup.find("a",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-xoduu5 r-1q142lx r-1w6e6rj r-9aw3ui r-3s2u2q r-1loqt21"})
+        tweetPostDate = articleSoup.find("a",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-xoduu5 r-1q142lx r-1w6e6rj r-9aw3ui r-3s2u2q r-1loqt21"})
         try:
             tweetUrl = tweetPostDate["href"]
         except TypeError:
