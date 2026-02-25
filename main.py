@@ -12,18 +12,6 @@ with open(".data/userFollowed.json","r") as followedProfilesFile:
         userFollowed.append(account)
     
 with sync_playwright() as playwright:
-    scrapedData = []
-    for account in userFollowed:
-        scrapedHtml = scrapeFromTwitter(playwright,userFingerpirintData,account)
-        scrapedData.append(scrapedHtml)
+    scrapeFromTwitter(playwright,userFingerpirintData,userFollowed)
     print("Done Scraping :D")
-
-    # i know this is silly but it's just for test
-    with open(".test/index.html","w") as firstIndex:
-        firstIndex.write(scrapedData[0])
-
-    with open(".test/index2.html","w") as secondIndex:
-        secondIndex.write(scrapedData[1])
-
-    print("exiting")
 
