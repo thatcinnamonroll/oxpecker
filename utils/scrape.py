@@ -35,6 +35,7 @@ def twitterScraper(page,account):
 #        "text": str, # text in tweet
 #        "author": str, # author bc tweet can be reposted from someone
 #        "media": [],  # multimedia urls
+#        "hasVideo": bool, # does tweet has video in it
 #        "isRetweet": bool,  # is that tweet is a retweet
 #        "isPinned": bool , # is that tweet pinned
 #        "url": str } # url to that tweet
@@ -76,6 +77,13 @@ def twitterScraper(page,account):
         for image in tweetMediaImgList:
             tweetMediaList.append(image['src'])
 
+        # checking if tweet has video
+        # the original plan was video repost support but they are kinda hard to code since i can't just take
+        # vid url, at least i dont't think so
+        hasVideo = False
+        if articleSoup.findAll("div",{"data-testid":"videoPlayer"}):
+            hasVideo = True
+
         # cheking is it retweet or pinned post
         isRetweet = False
         isPinned = False
@@ -104,6 +112,7 @@ def twitterScraper(page,account):
         tweet["text"] = tweetStr
         tweet["author"] = authorTweetText
         tweet["media"] = tweetMediaList
+        tweet["hasVideo"] = hasVideo
         tweet["isRetweet"] = isRetweet
         tweet["isPinned"] = isPinned
         tweet["url"] = tweetUrl
