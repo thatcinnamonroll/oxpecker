@@ -2,8 +2,9 @@ import json
 from playwright.sync_api import sync_playwright
 from utils.scrape import scrapeFromTwitter
 
-with open(".data/userFingerprint.json","r") as fingerPrintFile:
-    userFingerpirintData = json.load(fingerPrintFile)
+with open(".data/userSettings.json",'r') as fingerPrintFile:
+    userSettings = json.load(fingerPrintFile)
+    userFingerprint = userSettings["fingerprint"]
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
     userFollowedData = json.load(followedProfilesFile)
@@ -12,6 +13,6 @@ with open(".data/userFollowed.json","r") as followedProfilesFile:
         userFollowed.append(account)
     
 with sync_playwright() as playwright:
-    scrapeFromTwitter(playwright,userFingerpirintData,userFollowed)
+    scrapeFromTwitter(playwright,userFingerprint,userFollowed)
     print("Done Scraping :D")
 
