@@ -34,11 +34,13 @@ def twitterScraper(page,account):
 #    tweet = {
 #        "text": str, # text in tweet
 #        "author": str, # author bc tweet can be reposted from someone
+#        "authorUsername": str, # writers @at
 #        "media": [],  # multimedia urls
 #        "hasVideo": bool, # does tweet has video in it
 #        "isRetweet": bool,  # is that tweet is a retweet
 #        "isPinned": bool , # is that tweet pinned
-#        "url": str } # url to that tweet
+#        "url": str,  # url to that tweet
+#        "tweetId": str } # id of the tweet
 
     for article in articlesHtml:
         strArticle = str(article)
@@ -121,15 +123,23 @@ def twitterScraper(page,account):
         except TypeError:
             tweetUrl = None
 
+        # separating username and tweet id from url
+        listFromUrl = tweetUrl.split("/")
+        # this returns a list that looks like this ["","username","status","tweetID"]
+        tweetAuthorUsername = listFromUrl[1]
+        tweetId = listFromUrl[3]
+
         # adding to tweets list
         tweet = {}
         tweet["text"] = tweetStr
         tweet["author"] = authorTweetText
+        tweet["authorUsername"] = tweetAuthorUsername
         tweet["media"] = tweetMediaList
         tweet["hasVideo"] = hasVideo
         tweet["isRetweet"] = isRetweet
         tweet["isPinned"] = isPinned
         tweet["url"] = tweetUrl
+        tweet["id"] = tweetId
 
         tweets.append(tweet)
 
