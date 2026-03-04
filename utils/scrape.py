@@ -3,19 +3,19 @@ from playwright.sync_api import Playwright
 import random
 from bs4 import BeautifulSoup
 
-def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList):
+def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList,nitter):
     browser = playwright.firefox.launch()
     context = browser.new_context(geolocation=fingerPrintDict.get("geolocation"), locale=fingerPrintDict.get("locale"), permissions=fingerPrintDict.get("permissions"), storage_state=fingerPrintDict.get("storage_state"), timezone_id=fingerPrintDict.get("timezone_id"), user_agent=fingerPrintDict.get("user_agent"))
     page = context.new_page()
 
     for acc in accountsList:
-        twitterScraper(page,acc)
+        twitterScraper(page,acc,nitter)
 
     context.close()
     browser.close()
 
 
-def twitterScraper(page,account):
+def twitterScraper(page,account,nitter):
     print(f"scraping @{account}")
     page.goto(f"https://x.com/{account}")
     time.sleep(9)
@@ -59,25 +59,10 @@ def twitterScraper(page,account):
         tweetList = []
         strTweetText = str(tweetText)
         tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
-        textInTweet = tweetTextSoup.findAll("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"}) # that span holds clean text of tweet
-        hashtagInTweet = tweetTextSoup.findAll("a",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3 r-1loqt21"}) # that a holds #hashtag
-        atsInTweet = tweetTextSoup.findAll("a",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3 r-1wvb978 r-1loqt21"}) # that holds @ats
-
-        strAtsInTweet = str(atsInTweet)
-        strHashInTweet = str(hashtagInTweet)
-        strTextInTweet = str(textInTweet)
-
-        rmTagsSoup = BeautifulSoup(strTextInTweet,"html.parser")
-        rmTagsHashSoup = BeautifulSoup(strHashInTweet,"html.parser")
-        rmTagsAtsSoup = BeautifulSoup(strAtsInTweet,"html.parser")
-
-        cleanHash = rmTagsHashSoup.get_text()
-        cleanTweet = rmTagsSoup.get_text()
-        cleanAts = rmTagsAtsSoup.get_text()
-
-        tweetList.append(cleanTweet)
-        tweetList.append(cleanHash)
-        tweetList.append(cleanAts)
+        for tag in tweetTextSoup.children:
+            text = tag.getText()
+            formatedText = text.replace("@",f"{nitter}/")
+            tweetList.append(formatedText)
         tweetStr = "".join(tweetList)
 
         # reading tweet author

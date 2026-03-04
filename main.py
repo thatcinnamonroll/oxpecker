@@ -5,6 +5,7 @@ from utils.scrape import scrapeFromTwitter
 with open(".data/userSettings.json",'r') as fingerPrintFile:
     userSettings = json.load(fingerPrintFile)
     userFingerprint = userSettings["fingerprint"]
+    userNitterInstance = userSettings["nitter"]
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
     userFollowedData = json.load(followedProfilesFile)
@@ -13,6 +14,6 @@ with open(".data/userFollowed.json","r") as followedProfilesFile:
         userFollowed.append(account)
     
 with sync_playwright() as playwright:
-    scrapeFromTwitter(playwright,userFingerprint,userFollowed)
+    scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance)
     print("Done Scraping :D")
 
