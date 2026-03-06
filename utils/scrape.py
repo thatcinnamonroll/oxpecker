@@ -14,16 +14,17 @@ def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList,nitter)
     context.close()
     browser.close()
 
-
 def twitterScraper(page,account,nitter):
     print(f"scraping @{account}")
     page.goto(f"https://x.com/{account}")
     time.sleep(9)
-    # scrolling so browser loads more content, random to make it more... human ;)
-    randomScrollNum = random.randint(1,3)
-    for i in range(randomScrollNum):
-        page.keyboard.press("Space")
-        time.sleep(1)
+    # scrolling so browser loads more content
+    scrollNum = 0
+    while scrollNum < 20:
+        page.mouse.wheel(0,120)
+        time.sleep(0.3)
+        scrollNum += 1
+
     accHtml = page.content()
     soup = BeautifulSoup(accHtml,"html.parser")
     articlesHtml = soup.find_all('article')
