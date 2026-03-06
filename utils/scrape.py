@@ -25,6 +25,12 @@ def twitterScraper(page,account,nitter):
         time.sleep(0.3)
         scrollNum += 1
 
+    # clicking "show more" buttons to get full tweet
+    showMoreButtons = page.get_by_test_id("tweet-text-show-more-link").all()
+    for button in showMoreButtons:
+        button.click()
+        time.sleep(0.1)
+
     accHtml = page.content()
     soup = BeautifulSoup(accHtml,"html.parser")
     articlesHtml = soup.find_all('article')
