@@ -6,3 +6,6 @@ __pycache__
 
 # folder for test files i use mid writing
 .test
+
+# cache folder
+.cache

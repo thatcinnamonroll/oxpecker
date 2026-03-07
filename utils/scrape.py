@@ -8,11 +8,15 @@ def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList,nitter)
     context = browser.new_context(geolocation=fingerPrintDict.get("geolocation"), locale=fingerPrintDict.get("locale"), permissions=fingerPrintDict.get("permissions"), storage_state=fingerPrintDict.get("storage_state"), timezone_id=fingerPrintDict.get("timezone_id"), user_agent=fingerPrintDict.get("user_agent"))
     page = context.new_page()
 
+    tweets = {}
     for acc in accountsList:
-        twitterScraper(page,acc,nitter)
+        tweetList = twitterScraper(page,acc,nitter)
+        tweets[acc] = tweetList
 
     context.close()
     browser.close()
+
+    return tweets
 
 def twitterScraper(page,account,nitter):
     print(f"scraping @{account}")
@@ -140,6 +144,8 @@ def twitterScraper(page,account,nitter):
 
     with open(f".test/indexOf{account}.html","w") as firstIndex:
         firstIndex.write(accHtml)
+
+    return tweets
 
 
 
