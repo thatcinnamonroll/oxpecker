@@ -37,7 +37,7 @@ for followed in tweetsDict:
         if tweet["hasVideo"]:
             tweetStrList.append("[This tweet has video]")
         tweetStrList.append(f" {tweet["text"]}")
-        tweetStrList.append(f"\n [Nitter URL:{userNitterInstance}{tweet["url"]}]")
+        tweetStrList.append(f"\n [Nitter URL: {userNitterInstance}{tweet["url"]} ]")
         tweetStr = "".join(tweetStrList)
         mastodonBot(botApiKey,userMastodonInstance).post(tweetStr)
         postedTweets.append(tweet["id"])
