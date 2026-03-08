@@ -23,8 +23,12 @@ with sync_playwright() as playwright:
     tweetsDict = scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance)
     print("Done Scraping :D")
 
+# reading everything and posting to mastodon
 for followed in tweetsDict:
     botApiKey = userFollowedData[followed]
+    # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
+    if botApiKey == False:
+        continue
     tweets = tweetsDict[followed]
     for tweet in tweets:
         tweetStrList = []
@@ -36,6 +40,8 @@ for followed in tweetsDict:
             tweetStrList.append(f"[This is retweet from {userNitterInstance}/{tweet["authorUsername"]}]")
         if tweet["hasVideo"]:
             tweetStrList.append("[This tweet has video]")
+        if tweet["hasRef"]:
+            tweetStrList.append("[This tweet is refering to other tweet]")
         tweetStrList.append(f" {tweet["text"]}")
         tweetStrList.append(f"\n [Nitter URL: {userNitterInstance}{tweet["url"]} ]")
         tweetStr = "".join(tweetStrList)

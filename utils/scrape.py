@@ -50,6 +50,7 @@ def twitterScraper(page,account,nitter):
 #        "hasVideo": bool, # does tweet has video in it
 #        "isRetweet": bool,  # is that tweet is a retweet
 #        "isPinned": bool , # is that tweet pinned
+#        "hasRef": bool, # if tweet is refering other tweet this will be true
 #        "url": str,  # url to that tweet
 #        "tweetId": str } # id of the tweet
 
@@ -119,6 +120,12 @@ def twitterScraper(page,account,nitter):
         except TypeError:
             tweetUrl = None
 
+        # checking if tweet is refering to another tweet
+        hasRef = False
+        tweetRef = articleSoup.find("div",{"class":"css-175oi2r r-adacv r-1udh08x r-1ets6dv r-1867qdf r-rs99b7 r-o7ynqc r-6416eg r-1ny4l3l r-1loqt21"})
+        if tweetRef is not None:
+            hasRef = True
+
         # separating username and tweet id from url
         listFromUrl = tweetUrl.split("/")
         # this returns a list that looks like this ["","username","status","tweetID"]
@@ -134,6 +141,7 @@ def twitterScraper(page,account,nitter):
         tweet["hasVideo"] = hasVideo
         tweet["isRetweet"] = isRetweet
         tweet["isPinned"] = isPinned
+        tweet["hasRef"] = hasRef
         tweet["url"] = tweetUrl
         tweet["id"] = tweetId
 
