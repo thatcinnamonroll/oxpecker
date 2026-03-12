@@ -3,6 +3,9 @@ from playwright.sync_api import sync_playwright
 from utils.scrape import scrapeFromTwitter
 from utils.mastodon import mastodonBot
 
+print("oxpecker")
+print("written by thatcinnamonroll")
+
 with open(".data/userSettings.json",'r') as fingerPrintFile:
     userSettings = json.load(fingerPrintFile)
     userFingerprint = userSettings["fingerprint"]
@@ -18,6 +21,8 @@ with open(".data/userFollowed.json","r") as followedProfilesFile:
 with open(".cache/cache.json","r") as cacheFile:
     cacheData = json.load(cacheFile)
     postedTweets = cacheData["posted"]
+
+print("ready to work")
     
 with sync_playwright() as playwright:
     tweetsDict = scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance)
@@ -26,6 +31,7 @@ with sync_playwright() as playwright:
 # reading everything and posting to mastodon
 for followed in tweetsDict:
     botApiKey = userFollowedData[followed]
+    postedTweetsCount = 0 # counting posted tweets
     # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
     if botApiKey == False:
         continue
@@ -47,8 +53,10 @@ for followed in tweetsDict:
         tweetStr = "".join(tweetStrList)
         mastodonBot(botApiKey,userMastodonInstance).post(tweetStr)
         postedTweets.append(tweet["id"])
+        postedTweetsCount += 1
     with open(".cache/cache.json","w") as cacheFile:
         cacheData["posted"] = postedTweets
         cacheJson = json.dumps(cacheData,indent=4)
         cacheFile.write(cacheJson)
+    print(f"Posted {postedTweetsCount} to from @{followed} to mastodon")
 
