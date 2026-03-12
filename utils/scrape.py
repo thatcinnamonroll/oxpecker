@@ -1,5 +1,6 @@
 import time
 from playwright.sync_api import Playwright
+from playwright._impl._errors import TimeoutError as playwrightTimeout
 import random
 from bs4 import BeautifulSoup
 
@@ -32,7 +33,11 @@ def twitterScraper(page,account,nitter):
     # clicking "show more" buttons to get full tweet
     showMoreButtons = page.get_by_test_id("tweet-text-show-more-link").all()
     for button in showMoreButtons:
-        button.click()
+        try:
+            button.click()
+        except playwrightTimeout:
+            print("helo :D")
+            continue
         time.sleep(0.1)
 
     accHtml = page.content()
