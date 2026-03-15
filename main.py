@@ -2,7 +2,7 @@ import json
 from playwright.sync_api import sync_playwright
 from utils.scrape import scrapeFromTwitter
 from utils.mastodon import mastodonBot
-from utils.util import Bot
+from utils.util import Bot, downloadImg
 
 print("oxpecker")
 print("written by thatcinnamonroll")
@@ -30,6 +30,5 @@ with sync_playwright() as playwright:
     tweetsDict = scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance)
     print("Done Scraping :D")
 
-oxpeckerBot.ReadAndPost(tweetsDict)
-
+oxpeckerBot.readAndPost(tweetsDict)
 

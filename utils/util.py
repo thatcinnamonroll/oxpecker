@@ -1,5 +1,14 @@
 from utils.mastodon import mastodonBot
 import json
+import requests
+
+def downloadImg(url):
+    imgRequest = requests.get(url)
+    # getting img id
+    urlSeperated = url.split("https://pbs.twimg.com/media/")
+    imgId = urlSeperated[1]
+    open(f".cache/media/{imgId}.jpg","wb").write(imgRequest.content)
+    return imgId
 
 class Bot:
     def __init__(self,nitter,mastodon,cache,followed):
@@ -9,7 +18,7 @@ class Bot:
         self._postedTweets = cache["posted"]
         self._followed = followed
 
-    def ReadAndPost(self,scrapedDataTwitter):
+    def readAndPost(self,scrapedDataTwitter):
         # reading everything and posting to mastodon
         for followed in scrapedDataTwitter:
             print(f"reading tweets from @{followed}")
@@ -21,6 +30,7 @@ class Bot:
             tweets = scrapedDataTwitter[followed]
             for tweet in tweets:
                 tweetStrList = []
+                mediaList = None
                 if tweet["id"] in self._postedTweets:
                     continue
                 if tweet["isPinned"]:
@@ -31,10 +41,16 @@ class Bot:
                     tweetStrList.append("[This tweet has video]")
                 if tweet["hasRef"]:
                     tweetStrList.append("[This tweet is refering to other tweet]")
+                if not tweet["media"] == []:
+                    mediaList = []
+                    for mediaUrl in tweet["media"]:
+                        mediaId = downloadImg(mediaUrl)
+                        mediaOpen = open(f".cache/media/{mediaId}.jpg",'rb')
+                        mediaList.append(mediaOpen)
                 tweetStrList.append(f" {tweet["text"]}")
                 tweetStrList.append(f"\n [Nitter URL: {self._nitterInstance}{tweet["url"]} ]")
                 tweetStr = "".join(tweetStrList)
-                mastodonBot(botApiKey,self._mastodon).post(tweetStr)
+                mastodonBot(botApiKey,self._mastodon).post(tweetStr,mediaList)
                 self._postedTweets.append(tweet["id"])
                 postedTweetsCount += 1
         with open(".cache/cache.json","w") as cacheFile:
