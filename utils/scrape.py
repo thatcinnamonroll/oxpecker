@@ -36,7 +36,6 @@ def twitterScraper(page,account,nitter):
         try:
             button.click()
         except playwrightTimeout:
-            print("helo :D")
             continue
         time.sleep(0.1)
 
