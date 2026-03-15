@@ -1,11 +1,27 @@
 import json
+import sys
 from playwright.sync_api import sync_playwright
 from utils.scrape import scrapeFromTwitter
 from utils.mastodon import mastodonBot
 from utils.util import Bot, downloadImg
+from utils.config import BotConfig
+
+try:
+    userArgs = sys.argv[1]
+except IndexError:
+    userArgs = None
 
 print("oxpecker")
 print("written by thatcinnamonroll")
+
+if not userArgs == None:
+    config = BotConfig()
+    print("oxpecker config mode")
+    while config._keepConfigLoop:
+        print("What do you want to do? (if you dont know type h)")
+        userInput = input(": ")
+        config.userChoiceParser(userInput)
+    sys.exit()
 
 with open(".data/userSettings.json",'r') as fingerPrintFile:
     userSettings = json.load(fingerPrintFile)
