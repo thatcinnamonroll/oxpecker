@@ -3,7 +3,7 @@ import requests
 class mastodonBot:
     def __init__(self,botToken,botUrl):
         self.botToken = botToken
-        self.botUrl = f"https://{botUrl}"
+        self.botUrl = botUrl
 
         # media in post func means list/array with open("path/to/file",'rb')
     def post(self,newPost,media=None):
