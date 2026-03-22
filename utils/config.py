@@ -24,6 +24,24 @@ class BotConfig:
             followedFile.write(followedFileJson)
         print(f"unfollowed @{account}")
 
+    def configList(self,userInput):
+        if userInput == "followed":
+            with open(".data/userFollowed.json","r") as followedFile:
+                userFollowed = json.load(followedFile)
+            print("Followed user ------ Mastodon Api Key")
+            for user in userFollowed:
+                print(f"@{user} ---- {userFollowed[user]}")
+        elif userInput == "config":
+            with open(".data/userSettings.json",'r') as settingsFile:
+                settings = json.load(settingsFile)
+            print("----- Configs -----")
+            print(f"Nitter: {settings["nitter"]}")
+            print(f"Mastodon: {settings["mastodon"]}")
+        else:
+            print("No option with that name")
+            print(": list followed -- lists followed accounts and api keys assigned to them")
+            print(": list config -- lists all user configs")
+
     def userChoiceParser(self,userInput):
         if userInput == "h" or userInput == "help":
             print("Oxpecker config tool helper")
@@ -32,6 +50,7 @@ class BotConfig:
             print(": unfollow <twitter-user> - remove from userFollowed.json ")
             print(": setup - initial setup -- work in progress")
             print(": exit - quit config mode")
+            print(": list <what-to-list> - lists configs or followed")
             print(": clear-cache - deletes cache folder -- work in progress")
         elif userInput == "exit":
             self._keepConfigLoop = False
@@ -45,4 +64,10 @@ class BotConfig:
             splitedInput = userInput.split(" ")
             twitterAcc = splitedInput[1]
             self.unFollow(twitterAcc)
-
+        elif userInput.startswith("list"):
+            splitedInput = userInput.split(" ")
+            try:    # list in python dont have safe func like .get() :\
+                listOpt = splitedInput[1]
+            except IndexError:
+                listOpt = None
+            self.configList(listOpt)
