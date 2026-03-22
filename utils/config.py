@@ -37,6 +37,7 @@ class BotConfig:
             print("----- Configs -----")
             print(f"Nitter: {settings["nitter"]}")
             print(f"Mastodon: {settings["mastodon"]}")
+            print(f"Wait time: {settings["waitTime"]}")
         else:
             print("No option with that name")
             print(": list followed -- lists followed accounts and api keys assigned to them")

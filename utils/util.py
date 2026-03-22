@@ -11,12 +11,13 @@ def downloadImg(url):
     return imgId
 
 class Bot:
-    def __init__(self,nitter,mastodon,cache,followed):
+    def __init__(self,nitter,mastodon,cache,followed,waitTime):
         self._nitterInstance = nitter
         self._mastodon = mastodon
         self._cache = cache
         self._postedTweets = cache["posted"]
         self._followed = followed
+        self._waitTime = waitTime
 
     def readAndPost(self,scrapedDataTwitter):
         # reading everything and posting to mastodon
