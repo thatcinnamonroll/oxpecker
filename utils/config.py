@@ -1,4 +1,22 @@
 import json
+import os
+
+oxpeckerDir = os.getcwd()
+
+def ensureDataFiles():
+    if not os.path.exists(f"{oxpeckerDir}/.data"):
+        os.makedirs(f"{oxpeckerDir}/.data")
+        with open(f"{oxpeckerDir}/utils/defaultSettings.json","r") as stockSettingsFile:
+            stockSettingsDir = json.load(stockSettingsFile)
+            stockSettings = json.dumps(stockSettingsDir)
+        open(f"{oxpeckerDir}/.data/userFollowed.json","w").write("{}")
+        open(f"{oxpeckerDir}/.data/userSettings.json","w").write(stockSettings)
+
+def ensureCacheFiles():
+    if not os.path.exists(f"{oxpeckerDir}/.cache"):
+        os.makedirs(f"{oxpeckerDir}/.cache")
+        os.makedirs(f"{oxpeckerDir}/.cache/media")
+        open(f"{oxpeckerDir}/.cache/cache.json","w").write('{   "posted":[]    }')
 
 class BotConfig:
     def __init__(self):
@@ -43,6 +61,8 @@ class BotConfig:
             print(": list followed -- lists followed accounts and api keys assigned to them")
             print(": list config -- lists all user configs")
 
+    # def setup(self):
+
     def userChoiceParser(self,userInput):
         if userInput == "h" or userInput == "help":
             print("Oxpecker config tool helper")
@@ -72,3 +92,6 @@ class BotConfig:
             except IndexError:
                 listOpt = None
             self.configList(listOpt)
+
+ensureCacheFiles()
+ensureDataFiles()

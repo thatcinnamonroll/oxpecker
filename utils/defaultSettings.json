@@ -1,0 +1,12 @@
+{
+    "fingerprint" : {
+        "geolocation" : {"latitude":"","longitude":""},
+        "locale":"Your Locale",
+        "permissions":["geolocation"],
+        "storage_state":".data/storage.json",
+        "timezone_id":"Your Timeziome",
+        "user_agent":"Your user agent"},
+    "nitter": "Your preffered nitter instance",
+    "mastodon":"Mastodon instance hosting your bots",
+    "waitTime": false
+}
