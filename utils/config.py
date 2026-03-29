@@ -1,5 +1,6 @@
 import json
 import os
+from utils.configHelper import makeTwitterCacheFile, insertAuthTokenCookie
 
 oxpeckerDir = os.getcwd()
 
@@ -61,7 +62,21 @@ class BotConfig:
             print(": list followed -- lists followed accounts and api keys assigned to them")
             print(": list config -- lists all user configs")
 
-    # def setup(self):
+    def setup(self):
+        print("Warning if oxpecker is already set up running this command will clear all settings!")
+        shallContinue = input("Do you want to continue? [y/N]: ")
+        if not shallContinue == "y":
+            return
+        auth_token = {}
+        print("Making all dirs and files")
+        ensureCacheFiles()
+        ensureDataFiles()
+        makeTwitterCacheFile()
+        print("Done now please login to scrape account in browser, and search for 'auth_token' cookie")
+        input("When you are ready press enter: ")
+        auth_token["value"] = input("Please paste here 'value' line: ")
+        auth_token["expires"] = input("Please paste here 'expires' line (in unix time): ")
+        insertAuthTokenCookie(auth_token)
 
     def userChoiceParser(self,userInput):
         if userInput == "h" or userInput == "help":
@@ -92,6 +107,8 @@ class BotConfig:
             except IndexError:
                 listOpt = None
             self.configList(listOpt)
+        elif userInput.startswith("setup"):
+            self.setup()
 
 ensureCacheFiles()
 ensureDataFiles()
