@@ -2,6 +2,8 @@ from playwright.sync_api import sync_playwright
 from playwright._impl._errors import TimeoutError as playwrightTimeout
 import json
 import time
+import requests
+from bs4 import BeautifulSoup
 
 def makeTwitterCacheFile():
     with sync_playwright() as playwright:
@@ -51,5 +53,52 @@ def insertAuthTokenCookie(auth_token):
         storageFile.write(storageJson)
 
     print("Cookies saved!")
+
+def getUserAgent():
+    request = requests.get("https://www.useragents.me/")
+    websiteHtml = request.content
+    soup = BeautifulSoup(websiteHtml,"html.parser")
+    desktopUserAgents = str(soup.find("div",{"id":"most-common-desktop-useragents-json-csv"}))
+    scrapeSoup = BeautifulSoup(desktopUserAgents,"html.parser")
+    useragentsText = scrapeSoup.find("textarea",{"class":"form-control"}).get_text()
+    useragentsList = json.loads(useragentsText)
+    listNum = 0
+    for agent in useragentsList:
+        print(f"{listNum} - {agent["ua"]}")
+        listNum += 1
+    keepGoing = True
+    userSelectedUA = False
+    while keepGoing:
+        userChoice = int(input("Select which user agent do you want: "))
+        try:
+            userSelectedUA = useragentsList[userChoice]
+        except IndexError:
+            print("invalid choice, try again")
+        if userSelectedUA:
+            keepGoing = False
+
+    userAgent = userSelectedUA["ua"]
+    return userAgent
+
+def setupSettingsFile(geolocale,locale,timezoneId,user_agent,nitter,mastodon,waitTime):
+    with open(".data/userSettings.json","r") as settingsFile:
+        settings = json.load(settingsFile)
+
+        latitude = geolocale[0]
+        longitude = geolocale[1]
+
+        settings["fingerprint"]["geolocation"]["latitude"] = int(latitude)
+        settings["fingerprint"]["geolocation"]["longitude"] = int(longitude)
+        settings["fingerprint"]["locale"] = locale
+        settings["fingerprint"]["timezone_id"] = timezoneId
+        settings["fingerprint"]["user_agent"] = user_agent
+        settings["nitter"] = nitter
+        settings["mastodon"] = mastodon
+        settings["waitTime"] = waitTime
+
+    with open(".data/userSettings.json","w") as settingsFile:
+        settingsJson = json.dumps(settings,indent=4)
+        settingsFile.write(settingsJson)
+    print("Settings saved")
 
 

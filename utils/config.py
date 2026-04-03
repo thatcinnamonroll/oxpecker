@@ -1,6 +1,6 @@
 import json
 import os
-from utils.configHelper import makeTwitterCacheFile, insertAuthTokenCookie
+from utils.configHelper import *
 
 oxpeckerDir = os.getcwd()
 
@@ -72,11 +72,30 @@ class BotConfig:
         ensureCacheFiles()
         ensureDataFiles()
         makeTwitterCacheFile()
+        # loging into twitter
         print("Done now please login to scrape account in browser, and search for 'auth_token' cookie")
         input("When you are ready press enter: ")
         auth_token["value"] = input("Please paste here 'value' line: ")
         auth_token["expires"] = input("Please paste here 'expires' line (in unix time): ")
         insertAuthTokenCookie(auth_token)
+        # settings
+        print("Okay now settings, we are gona set browser fingerprint for now")
+        geolocation = input("Now please type latitude and longitude you want the browser to have in that format (<latitude>/<longitude>): ")
+        separatedGeolocale = geolocation.split("/")
+        locale = input("Now please type locale, for example (de-DE): ")
+        timezoneId = input("Now please type timezone id, for example (Europe/Berlin): ")
+        userAgent = input("Now please type user agent, if you want to get list of most used ones press enter: ")
+        if userAgent == "":
+            userAgent = getUserAgent()
+        print("Browser fingerprint done, now oxpecker settings")
+        nitter = input("Type here your preffered nitter instance (with the https://): ")
+        mastodonUrl = input("Type here url of mastodon on which you host your bots: ")
+        waitTime = input("Type here how long do you want oxpecker to wait before each scraping sessions (in seconds, if you want to scrape once press enter): ")
+        if waitTime == "":
+            waitTime = False
+        else:
+            waitTime = int(waitTime)
+        setupSettingsFile(separatedGeolocale,locale,timezoneId,userAgent,nitter,mastodonUrl,waitTime)
 
     def userChoiceParser(self,userInput):
         if userInput == "h" or userInput == "help":
@@ -84,7 +103,7 @@ class BotConfig:
             print("Commands ----")
             print(": follow <twitter-user> - add username typed here to userFollowed.json, making bot scrape its account")
             print(": unfollow <twitter-user> - remove from userFollowed.json ")
-            print(": setup - initial setup -- work in progress")
+            print(": setup - initial setup")
             print(": exit - quit config mode")
             print(": list <what-to-list> - lists configs or followed")
             print(": clear-cache - deletes cache folder -- work in progress")
