@@ -28,7 +28,8 @@ class Bot:
             # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
             if botApiKey == False:
                 continue
-            tweets = scrapedDataTwitter[followed].reverse() # otherwise it posts tweets in the reverse order
+            tweets = scrapedDataTwitter[followed]
+            tweets.reverse() # otherwise it posts tweets in the reverse order
             for tweet in tweets:
                 tweetStrList = []
                 mediaList = None
@@ -54,8 +55,9 @@ class Bot:
                 mastodonBot(botApiKey,self._mastodon).post(tweetStr,mediaList)
                 self._postedTweets.append(tweet["id"])
                 postedTweetsCount += 1
+            print(f"Posted {postedTweetsCount} tweets from @{followed} to mastodon")
         with open(".cache/cache.json","w") as cacheFile:
             self._cache["posted"] = self._postedTweets
             cacheJson = json.dumps(self._cache,indent=4)
             cacheFile.write(cacheJson)
-        print(f"Posted {postedTweetsCount} tweets from @{followed} to mastodon")
+
