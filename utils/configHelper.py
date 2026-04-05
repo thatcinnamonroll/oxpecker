@@ -87,8 +87,8 @@ def setupSettingsFile(geolocale,locale,timezoneId,user_agent,nitter,mastodon,wai
         latitude = geolocale[0]
         longitude = geolocale[1]
 
-        settings["fingerprint"]["geolocation"]["latitude"] = int(latitude)
-        settings["fingerprint"]["geolocation"]["longitude"] = int(longitude)
+        settings["fingerprint"]["geolocation"]["latitude"] = float(latitude)
+        settings["fingerprint"]["geolocation"]["longitude"] = float(longitude)
         settings["fingerprint"]["locale"] = locale
         settings["fingerprint"]["timezone_id"] = timezoneId
         settings["fingerprint"]["user_agent"] = user_agent
