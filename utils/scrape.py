@@ -4,13 +4,13 @@ from playwright._impl._errors import TimeoutError as playwrightTimeout
 import random
 from bs4 import BeautifulSoup
 
-def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList,nitter):
+def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList,nitter,debugMode):
     browser = playwright.firefox.launch()
     context = browser.new_context(geolocation=fingerPrintDict.get("geolocation"), locale=fingerPrintDict.get("locale"), permissions=fingerPrintDict.get("permissions"), storage_state=fingerPrintDict.get("storage_state"), timezone_id=fingerPrintDict.get("timezone_id"), user_agent=fingerPrintDict.get("user_agent"))
     page = context.new_page()
     tweets = {}
     for acc in accountsList:
-        tweetList = twitterScraper(page,acc,nitter)
+        tweetList = twitterScraper(page,acc,nitter,debugMode)
         tweets[acc] = tweetList
 
     context.close()
@@ -18,7 +18,7 @@ def scrapeFromTwitter(playwright:Playwright,fingerPrintDict,accountsList,nitter)
 
     return tweets
 
-def twitterScraper(page,account,nitter):
+def twitterScraper(page,account,nitter,debugMode):
     print(f"scraping @{account}")
     page.goto(f"https://x.com/{account}")
     time.sleep(9)
@@ -150,11 +150,13 @@ def twitterScraper(page,account,nitter):
 
         tweets.append(tweet)
 
-    with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
-        scrapedFile.write(str(tweets))
+    if debugMode:
+        print("debug")
+        with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
+            scrapedFile.write(str(tweets))
 
-    with open(f".test/indexOf{account}.html","w") as firstIndex:
-        firstIndex.write(accHtml)
+        with open(f".test/indexOf{account}.html","w") as firstIndex:
+            firstIndex.write(accHtml)
 
     return tweets
 

@@ -8,5 +8,6 @@
         "user_agent":"Your user agent"},
     "nitter": "Your preffered nitter instance",
     "mastodon":"Mastodon instance hosting your bots",
-    "waitTime": false
+    "waitTime": false,
+    "debugMode": false
 }

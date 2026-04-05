@@ -30,6 +30,7 @@ with open(".data/userSettings.json",'r') as fingerPrintFile:
     userNitterInstance = userSettings["nitter"]
     userMastodonInstance = userSettings["mastodon"]
     userWaitTime = userSettings["waitTime"]
+    userDebugmode = userSettings["debugMode"]
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
     userFollowedData = json.load(followedProfilesFile)
@@ -47,7 +48,7 @@ print("ready to work")
 # main loop
 while True:
     with sync_playwright() as playwright:
-        tweetsDict = scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance)
+        tweetsDict = scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance,userDebugmode)
         print("Done Scraping :D")
 
     oxpeckerBot.readAndPost(tweetsDict)

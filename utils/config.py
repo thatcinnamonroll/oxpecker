@@ -57,6 +57,7 @@ class BotConfig:
             print(f"Nitter: {settings["nitter"]}")
             print(f"Mastodon: {settings["mastodon"]}")
             print(f"Wait time: {settings["waitTime"]}")
+            print(f"Debug mode: {settings["debugMode"]}")
         else:
             print("No option with that name")
             print(": list followed -- lists followed accounts and api keys assigned to them")
@@ -97,6 +98,14 @@ class BotConfig:
             waitTime = int(waitTime)
         setupSettingsFile(separatedGeolocale,locale,timezoneId,userAgent,nitter,mastodonUrl,waitTime)
 
+    def debugmode(self,state):
+        with open(".data/userSettings.json","r") as settingsFile:
+            userSettings = json.load(settingsFile)
+        userSettings["debugMode"] = state
+        with open(".data/userSettings.json","w") as settingsFile:
+            settingsJson = json.dumps(userSettings,indent=4)
+            settingsFile.write(settingsJson)
+
     def userChoiceParser(self,userInput):
         if userInput == "h" or userInput == "help":
             print("Oxpecker config tool helper")
@@ -107,6 +116,7 @@ class BotConfig:
             print(": exit - quit config mode")
             print(": list <what-to-list> - lists configs or followed")
             print(": clear-cache - deletes cache folder -- work in progress")
+            print(": debugmode <on/off> - enable or disable debug mode")
         elif userInput == "exit":
             self._keepConfigLoop = False
         elif userInput.startswith("follow"):
@@ -128,6 +138,17 @@ class BotConfig:
             self.configList(listOpt)
         elif userInput.startswith("setup"):
             self.setup()
+        elif userInput.startswith("debugmode"):
+            splitedInput = userInput.split(" ")
+            state = splitedInput[1]
+            if state == "on":
+                state = True
+                self.debugmode(state)
+            elif state == "off":
+                state = False
+                self.debugmode(state)
+            else:
+                print("Sorry i did not get that, you shoud type <on> or <off>")
 
 ensureCacheFiles()
 ensureDataFiles()
