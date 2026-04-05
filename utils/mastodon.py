@@ -26,7 +26,6 @@ class mastodonBot:
         response = request.json()
         if request.status_code == 200 or request.status_code == 202:
             imgId = str(response.get("id"))
-            print("media sent")
         else:
             imgId = None
         return imgId
