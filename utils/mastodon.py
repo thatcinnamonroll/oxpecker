@@ -1,4 +1,5 @@
 import requests
+import time
 
 class mastodonBot:
     def __init__(self,botToken,botUrl):
@@ -16,6 +17,7 @@ class mastodonBot:
             requestData['media_ids[]'] = mediaList
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}
         requests.post(f"{self.botUrl}/api/v1/statuses",data=requestData,headers=requestHeader)
+        time.sleep(2) # to avoid race condition
 
     def sendMedia(self,media):
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}

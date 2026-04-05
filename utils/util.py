@@ -28,7 +28,7 @@ class Bot:
             # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
             if botApiKey == False:
                 continue
-            tweets = scrapedDataTwitter[followed]
+            tweets = scrapedDataTwitter[followed].reverse() # otherwise it posts tweets in the reverse order
             for tweet in tweets:
                 tweetStrList = []
                 mediaList = None
