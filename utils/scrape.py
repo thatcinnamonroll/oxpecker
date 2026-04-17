@@ -70,15 +70,21 @@ def twitterScraper(page,account,nitter,debugMode):
             continue
 
         # reading text in tweet
-        tweetText = articleSoup.find("div", {"data-testid":"tweetText"})
-        tweetList = []
-        strTweetText = str(tweetText)
-        tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
-        for tag in tweetTextSoup.children:
-            text = tag.getText()
-            formatedText = text.replace("@",f"{nitter}/")
-            tweetList.append(formatedText)
-        tweetStr = "".join(tweetList)
+        refTweetText = articleSoup.find("div",{"data-testid":"tweetText","style":"-webkit-line-clamp: 5; color: rgb(15, 20, 25);"}) # div in which there is ref tweet text
+
+        tweetText = articleSoup.find("div", {"data-testid":"tweetText"}) # normal tweet text
+        if not refTweetText == tweetText:
+            tweetList = []
+            strTweetText = str(tweetText)
+            tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
+            for tag in tweetTextSoup.children:
+                text = tag.getText()
+                formatedText = text.replace("@",f"{nitter}/")
+                tweetList.append(formatedText)
+            tweetStr = "".join(tweetList)
+        else:
+            # if they are the same that means author did not write anything, only referenced some tweet
+            tweetStr = None
 
         # reading tweet author
         tweetAuthorBar = articleSoup.find("div",{"class":"css-175oi2r r-k4xj1c r-18u37iz r-1wtj0ep"})
