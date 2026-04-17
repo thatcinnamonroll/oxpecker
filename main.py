@@ -53,6 +53,9 @@ while True:
 
     oxpeckerBot.readAndPost(tweetsDict)
 
+    # release the ram
+    tweetsDict = None
+
     if oxpeckerBot._waitTime == False: # if wait time will be set to false oxpecker will just turn itself off after one while loop
         sys.exit()
 
