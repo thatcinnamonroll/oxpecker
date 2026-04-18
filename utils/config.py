@@ -98,15 +98,16 @@ class BotConfig:
             waitTime = int(waitTime)
         setupSettingsFile(separatedGeolocale,locale,timezoneId,userAgent,nitter,mastodonUrl,waitTime)
 
-    def debugmode(self,state):
+    def changeSetting(self,settingName,settingVal):
         with open(".data/userSettings.json","r") as settingsFile:
             userSettings = json.load(settingsFile)
-        userSettings["debugMode"] = state
+        userSettings[settingName] = settingVal
         with open(".data/userSettings.json","w") as settingsFile:
             settingsJson = json.dumps(userSettings,indent=4)
             settingsFile.write(settingsJson)
 
     def userChoiceParser(self,userInput):
+        splitedInput = userInput.split(" ")
         if userInput == "h" or userInput == "help":
             print("Oxpecker config tool helper")
             print("Commands ----")
@@ -117,20 +118,18 @@ class BotConfig:
             print(": list <what-to-list> - lists configs or followed")
             print(": clear-cache - deletes cache folder -- work in progress")
             print(": debugmode <on/off> - enable or disable debug mode")
+            print(": time <seconds> - change how often oxpecker scrapes, if you wana change it to false simply press space once")
         elif userInput == "exit":
             self._keepConfigLoop = False
         elif userInput.startswith("follow"):
-            splitedInput = userInput.split(" ")
             twitterAcc = splitedInput[1]
             print("Please enter mastodon token for that twitter page (if you dont want to post to mastodon press enter)")
             userToken = input(": ")
             self.follow(twitterAcc,userToken)
         elif userInput.startswith("unfollow"):
-            splitedInput = userInput.split(" ")
             twitterAcc = splitedInput[1]
             self.unFollow(twitterAcc)
         elif userInput.startswith("list"):
-            splitedInput = userInput.split(" ")
             try:    # list in python dont have safe func like .get() :\
                 listOpt = splitedInput[1]
             except IndexError:
@@ -139,7 +138,6 @@ class BotConfig:
         elif userInput.startswith("setup"):
             self.setup()
         elif userInput.startswith("debugmode"):
-            splitedInput = userInput.split(" ")
             state = splitedInput[1]
             if state == "on":
                 state = True
@@ -149,6 +147,12 @@ class BotConfig:
                 self.debugmode(state)
             else:
                 print("Sorry i did not get that, you shoud type <on> or <off>")
+        elif userInput.startswith("time"):
+            newTime = splitedInput[1]
+            if newTime == "": # if user pressed one space meaning setting time to false
+                newTime = False
+            self.changeSetting("waitTime",newTime)
+            print(f"Time set to: {newTime}")
 
 ensureCacheFiles()
 ensureDataFiles()
