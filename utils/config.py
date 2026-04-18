@@ -156,6 +156,8 @@ class BotConfig:
             newTime = splitedInput[1]
             if newTime == "": # if user pressed one space meaning setting time to false
                 newTime = False
+            else:
+                newTime = int(newTime)
             self.changeSetting("waitTime",newTime)
             print(f"Time set to: {newTime}")
 
