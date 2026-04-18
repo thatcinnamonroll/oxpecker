@@ -22,7 +22,8 @@ if not userArgs == None:
         print("What do you want to do? (if you dont know type h)")
         userInput = input(": ")
         config.userChoiceParser(userInput)
-    sys.exit()
+    if config._sysExitAfterLoop:
+        sys.exit()
 
 with open(".data/userSettings.json",'r') as fingerPrintFile:
     userSettings = json.load(fingerPrintFile)

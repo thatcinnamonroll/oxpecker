@@ -22,6 +22,7 @@ def ensureCacheFiles():
 class BotConfig:
     def __init__(self):
         self._keepConfigLoop = True
+        self._sysExitAfterLoop = True
 
     def follow(self,account,mastodonToken):
         if mastodonToken == "":
@@ -114,12 +115,16 @@ class BotConfig:
             print(": follow <twitter-user> - add username typed here to userFollowed.json, making bot scrape its account")
             print(": unfollow <twitter-user> - remove from userFollowed.json ")
             print(": setup - initial setup")
-            print(": exit - quit config mode")
+            print(": exit - quit config mode and close oxpecker")
+            print(": start - quit config mode and start oxpecker")
             print(": list <what-to-list> - lists configs or followed")
             print(": clear-cache - deletes cache folder -- work in progress")
             print(": debugmode <on/off> - enable or disable debug mode")
             print(": time <seconds> - change how often oxpecker scrapes, if you wana change it to false simply press space once")
         elif userInput == "exit":
+            self._keepConfigLoop = False
+        elif userInput == "start":
+            self._sysExitAfterLoop = False
             self._keepConfigLoop = False
         elif userInput.startswith("follow"):
             twitterAcc = splitedInput[1]
