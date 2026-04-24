@@ -78,6 +78,10 @@ def twitterScraper(page,account,nitter,debugMode):
             strTweetText = str(tweetText)
             tweetTextSoup = BeautifulSoup(strTweetText,"html.parser")
             for tag in tweetTextSoup.children:
+                emojiList = tag.findAll("img",{"class":"r-4qtqp9 r-dflpy8 r-k4bwe5 r-1kpi4qh r-pp5qcn r-h9hxbl"}) # twitter pusts emojis as imgs
+                for emojiLoop in emojiList:
+                    emoji = emojiLoop["alt"]
+                    tag.img.replace_with(emoji)
                 text = tag.getText()
                 formatedText = text.replace("@",f"{nitter}/")
                 tweetList.append(formatedText)
