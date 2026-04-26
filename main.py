@@ -2,7 +2,7 @@ import json
 import sys
 import time
 from playwright.sync_api import sync_playwright
-from utils.scrape import scrapeFromTwitter
+from utils.scrape import twitterScraper
 from utils.mastodon import mastodonBot
 from utils.util import Bot, downloadImg
 from utils.config import BotConfig
@@ -43,13 +43,17 @@ with open(".cache/cache.json","r") as cacheFile:
     cacheData = json.load(cacheFile)
     postedTweets = cacheData["posted"]
 
+if userDebugmode:
+    print("WARNING: Debug mode on, extra logs will be made")
+
 oxpeckerBot = Bot(userNitterInstance,userMastodonInstance,cacheData,userFollowedData,userWaitTime)
+twitter = twitterScraper(userFingerprint,userDebugmode,userNitterInstance)
 print("ready to work")
 
 # main loop
 while True:
     with sync_playwright() as playwright:
-        tweetsDict = scrapeFromTwitter(playwright,userFingerprint,userFollowed,userNitterInstance,userDebugmode)
+        tweetsDict = twitter.runScraper(playwright,userFollowed)
         print("Done Scraping :D")
 
     oxpeckerBot.readAndPost(tweetsDict)

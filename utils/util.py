@@ -27,6 +27,7 @@ class Bot:
             postedTweetsCount = 0 # counting posted tweets
             # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
             if botApiKey == False:
+                print(f"Skipped @{followed}, mastodon token set to false")
                 continue
             tweets = scrapedDataTwitter[followed]
             tweets.reverse() # otherwise it posts tweets in the reverse order
