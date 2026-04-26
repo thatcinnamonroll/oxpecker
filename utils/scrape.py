@@ -34,6 +34,27 @@ class twitterScraper:
         print(f"scraping @{account}")
         page.goto(f"https://x.com/{account}")
         time.sleep(9)
+
+        # getting page with profile pic
+        page.get_by_role("link", name="Opens profile photo").click()
+        time.sleep(1)
+        pfpPageHtml = page.content()
+        page.get_by_role("button", name="Close").click()
+        time.sleep(0.5)
+
+        pfpSoup = BeautifulSoup(pfpPageHtml,"html.parser")
+        pfpDiv = pfpSoup.find("div",{"class":"css-175oi2r r-1mlwlqe r-1udh08x r-417010 r-aqfbo4 r-n1ft60 r-gf0ln r-agouwx r-1p0dtai r-16l9doz r-1d2f490 r-pm9dpa r-dnmrzs r-u8s1d r-zchlnj r-ipm5af r-iyfy8q r-sdzlij r-1fdo3w0"})
+
+        pfpDivSoup = BeautifulSoup(str(pfpDiv),"html.parser")
+        pfpImg = pfpDivSoup.find("img",{"class":"css-9pa8cd"})
+        pfpUrl = pfpImg["src"]
+
+        # relese ram
+        pfpSoup = None
+        pfpDiv = None
+        pfpDivSoup = None
+        pfpImg = None
+
         # scrolling so browser loads more content
         scrollNum = 0
         while scrollNum < 20:
@@ -53,6 +74,10 @@ class twitterScraper:
         accHtml = page.content()
         soup = BeautifulSoup(accHtml,"html.parser")
         articlesHtml = soup.find_all('article')
+
+        # data of scraped account
+        accountData = {}
+        metadata = {}
         # list of all tweets
         tweets = []
 
@@ -157,6 +182,9 @@ class twitterScraper:
             tweetAuthorUsername = listFromUrl[1]
             tweetId = listFromUrl[3]
 
+            # adding pfp url to metadata
+            metadata["pfp"] = pfpUrl
+
             # adding to tweets list
             tweet = {}
             tweet["text"] = tweetStr
@@ -172,14 +200,20 @@ class twitterScraper:
 
             tweets.append(tweet)
 
+            accountData["metadata"] = metadata
+            accountData["tweets"] = tweets
+
         if self._debugMode:
             with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
-                scrapedFile.write(str(tweets))
+                scrapedFile.write(str(accountData))
 
             with open(f".test/indexOf{account}.html","w") as firstIndex:
                 firstIndex.write(accHtml)
 
-        return tweets
+            with open(f".test/indexOfPfp{account}.html","w") as pfpIndex:
+                pfpIndex.write(pfpPageHtml)
+
+        return accountData
 
 
 
