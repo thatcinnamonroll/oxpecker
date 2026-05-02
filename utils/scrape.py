@@ -25,6 +25,8 @@ class twitterScraper:
             tweetList = self.scrape(page,acc)
             tweets[acc] = tweetList
 
+        context.storage_state(path=self._storage_state) # saving new cookies in case website updates something
+
         context.close()
         browser.close()
 
