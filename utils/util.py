@@ -25,12 +25,12 @@ class Bot:
             print(f"reading tweets from @{followed}")
             botApiKey = self._followed[followed]
             pfpUrl = scrapedDataTwitter[followed]["metadata"]["pfp"]
-            self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
             postedTweetsCount = 0 # counting posted tweets
             # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
             if botApiKey == False:
                 print(f"Skipped @{followed}, mastodon token set to false")
                 continue
+            self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
             tweets = scrapedDataTwitter[followed]["tweets"]
             tweets.reverse() # otherwise it posts tweets in the reverse order
             for tweet in tweets:
