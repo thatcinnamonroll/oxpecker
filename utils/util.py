@@ -24,12 +24,14 @@ class Bot:
         for followed in scrapedDataTwitter:
             print(f"reading tweets from @{followed}")
             botApiKey = self._followed[followed]
+            pfpUrl = scrapedDataTwitter[followed]["metadata"]["pfp"]
+            self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
             postedTweetsCount = 0 # counting posted tweets
             # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
             if botApiKey == False:
                 print(f"Skipped @{followed}, mastodon token set to false")
                 continue
-            tweets = scrapedDataTwitter[followed]
+            tweets = scrapedDataTwitter[followed]["tweets"]
             tweets.reverse() # otherwise it posts tweets in the reverse order
             for tweet in tweets:
                 tweetStrList = []
@@ -61,4 +63,26 @@ class Bot:
             self._cache["posted"] = self._postedTweets
             cacheJson = json.dumps(self._cache,indent=4)
             cacheFile.write(cacheJson)
+
+    def updatePfpIfNotNewest(self,pfpUrl,account,mastodonToken):
+        urlSeperated = pfpUrl.split("https://pbs.twimg.com/profile_images/")
+        pfpIdWithSlashes = urlSeperated[1]
+        pfpId = pfpIdWithSlashes.replace("/","-")
+        with open(".cache/cache.json","r") as cacheFile:
+            cacheData = json.load(cacheFile)
+
+        try:
+            mastodonPfp = cacheData["pfp"][account]
+        except KeyError:
+            mastodonPfp = None
+
+        if not mastodonPfp == pfpId:
+            pfpRequest = requests.get(f"https://pbs.twimg.com/profile_images/{pfpIdWithSlashes}")
+            open(f".cache/pfp/{pfpId}","wb").write(pfpRequest.content)
+            mastodonBot(mastodonToken,self._mastodon).updatePfp(open(f".cache/pfp/{pfpId}",'rb'))
+            cacheData["pfp"][account] = pfpId
+            self._cache = cacheData
+            with open(".cache/cache.json","w") as cacheFile:
+                cacheJson = json.dumps(cacheData,indent=4)
+                cacheFile.write(cacheJson)
 

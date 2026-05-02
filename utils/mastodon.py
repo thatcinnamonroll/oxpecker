@@ -29,3 +29,8 @@ class mastodonBot:
         else:
             imgId = None
         return imgId
+
+    def updatePfp(self,pfp):
+        requestHeader = {'Authorization': f'Bearer {self.botToken}'}
+        requestMedia = {'avatar':pfp}
+        request = requests.patch(f"{self.botUrl}/api/v1/accounts/update_credentials",files=requestMedia,headers=requestHeader)

@@ -17,7 +17,8 @@ def ensureCacheFiles():
     if not os.path.exists(f"{oxpeckerDir}/.cache"):
         os.makedirs(f"{oxpeckerDir}/.cache")
         os.makedirs(f"{oxpeckerDir}/.cache/media")
-        open(f"{oxpeckerDir}/.cache/cache.json","w").write('{   "posted":[]    }')
+        os.makedirs(f"{oxpeckerDir}/.cache/pfp")
+        open(f"{oxpeckerDir}/.cache/cache.json","w").write('{   "posted":[],    "pfp":{}    }')
 
 class BotConfig:
     def __init__(self):
