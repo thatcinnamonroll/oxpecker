@@ -45,7 +45,7 @@ class Bot:
                 if tweet["hasVideo"]:
                     tweetStrList.append("[This tweet has video]")
                 if tweet["hasRef"]:
-                    tweetStrList.append("[This tweet is refering to other tweet]")
+                    tweetStrList.append(f"[This tweet is refering to tweet written by {tweet["refTweetAuthorUsername"]}]")
                 if not tweet["media"] == []:
                     mediaList = []
                     for mediaUrl in tweet["media"]:

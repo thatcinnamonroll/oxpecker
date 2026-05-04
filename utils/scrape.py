@@ -93,6 +93,7 @@ class twitterScraper:
     #        "isRetweet": bool,  # is that tweet is a retweet
     #        "isPinned": bool , # is that tweet pinned
     #        "hasRef": bool, # if tweet is refering other tweet this will be true
+    #        "refTweetAuthorUsername" : str/None, # if tweet is not refering to other tweets its None, otherwise its str with nitter url to ref tweet author profile
     #        "url": str,  # url to that tweet
     #        "tweetId": str } # id of the tweet
         if self._debugMode:
@@ -182,9 +183,18 @@ class twitterScraper:
 
             # checking if tweet is refering to another tweet
             hasRef = False
+            refTweetAuthorUsername = None
             tweetRef = articleSoup.find("div",{"class":"css-175oi2r r-adacv r-1udh08x r-1ets6dv r-1867qdf r-rs99b7 r-o7ynqc r-6416eg r-1ny4l3l r-1loqt21"})
             if tweetRef is not None:
                 hasRef = True
+
+                # reading refered tweet author username
+                refTweetSoup = BeautifulSoup(str(tweetRef),"html.parser")
+                refTweetUsernameDiv = refTweetSoup.find("div",{"class":"css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978"})
+                refTweetUsernameDivSoup = BeautifulSoup(str(refTweetUsernameDiv),"html.parser")
+                refTweetUsernameSpan = refTweetUsernameDivSoup.find("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+                refTweetAuthorUnformated = refTweetUsernameSpan.get_text()
+                refTweetAuthorUsername = refTweetAuthorUnformated.replace("@",f"{self._nitter}/")
 
             # separating username and tweet id from url
             listFromUrl = tweetUrl.split("/")
@@ -205,6 +215,7 @@ class twitterScraper:
             tweet["isRetweet"] = isRetweet
             tweet["isPinned"] = isPinned
             tweet["hasRef"] = hasRef
+            tweet["refTweetAuthorUsername"] = refTweetAuthorUsername
             tweet["url"] = tweetUrl
             tweet["id"] = tweetId
 
