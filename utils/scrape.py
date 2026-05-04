@@ -95,6 +95,12 @@ class twitterScraper:
     #        "hasRef": bool, # if tweet is refering other tweet this will be true
     #        "url": str,  # url to that tweet
     #        "tweetId": str } # id of the tweet
+        if self._debugMode:
+            with open(f".test/indexOf{account}.html","w") as firstIndex:
+                firstIndex.write(accHtml)
+
+            with open(f".test/indexOfPfp{account}.html","w") as pfpIndex:
+                pfpIndex.write(pfpPageHtml)
 
         for article in articlesHtml:
             strArticle = str(article)
@@ -134,6 +140,8 @@ class twitterScraper:
             strTweetAuthorBar = str(tweetAuthorBar)
             authorTweetSoup = BeautifulSoup(strTweetAuthorBar,"html.parser")
             authorTweet = authorTweetSoup.find("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+            if authorTweet == None: # if there is no span with that class tweets is probably invalid
+                continue
             authorTweetText = authorTweet.get_text()
 
             # reading added media (photos as of right now)
@@ -208,12 +216,6 @@ class twitterScraper:
         if self._debugMode:
             with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
                 scrapedFile.write(str(accountData))
-
-            with open(f".test/indexOf{account}.html","w") as firstIndex:
-                firstIndex.write(accHtml)
-
-            with open(f".test/indexOfPfp{account}.html","w") as pfpIndex:
-                pfpIndex.write(pfpPageHtml)
 
         return accountData
 
