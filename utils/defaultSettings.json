@@ -9,5 +9,7 @@
     "nitter": "Your preffered nitter instance",
     "mastodon":"Mastodon instance hosting your bots",
     "waitTime": false,
-    "debugMode": false
+    "debugMode": false,
+    "postStatus":false,
+    "statusAccountToken":""
 }

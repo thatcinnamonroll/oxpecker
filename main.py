@@ -28,10 +28,12 @@ if not userArgs == None:
 with open(".data/userSettings.json",'r') as fingerPrintFile:
     userSettings = json.load(fingerPrintFile)
     userFingerprint = userSettings["fingerprint"]
-    userNitterInstance = userSettings["nitter"]
-    userMastodonInstance = userSettings["mastodon"]
-    userWaitTime = userSettings["waitTime"]
-    userDebugmode = userSettings["debugMode"]
+    nitterInstance = userSettings["nitter"]
+    mastodonInstance = userSettings["mastodon"]
+    waitTime = userSettings["waitTime"]
+    debugMode = userSettings["debugMode"]
+    postStatus = userSettings["postStatus"]
+    postStatusApiKey = userSettings["statusAccountToken"]
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
     userFollowedData = json.load(followedProfilesFile)
@@ -43,15 +45,22 @@ with open(".cache/cache.json","r") as cacheFile:
     cacheData = json.load(cacheFile)
     postedTweets = cacheData["posted"]
 
-if userDebugmode:
+if debugMode:
     print("WARNING: Debug mode on, extra logs will be made")
 
-oxpeckerBot = Bot(userNitterInstance,userMastodonInstance,cacheData,userFollowedData,userWaitTime)
-twitter = twitterScraper(userFingerprint,userDebugmode,userNitterInstance)
+oxpeckerBot = Bot(nitterInstance,mastodonInstance,cacheData,userFollowedData,waitTime)
+twitter = twitterScraper(userFingerprint,debugMode,nitterInstance)
+
+if postStatus:
+    statusBot = mastodonBot(postStatusApiKey,mastodonInstance)
+
 print("ready to work")
 
 # main loop
 while True:
+    if postStatus:
+        statusBot.post("Started Work!")
+
     with sync_playwright() as playwright:
         tweetsDict = twitter.runScraper(playwright,userFollowed)
         print("Done Scraping :D")
@@ -60,6 +69,9 @@ while True:
 
     # release the ram
     tweetsDict = None
+
+    if postStatus:
+        statusBot.post("Work done going to sleep")
 
     if oxpeckerBot._waitTime == False: # if wait time will be set to false oxpecker will just turn itself off after one while loop
         sys.exit()
