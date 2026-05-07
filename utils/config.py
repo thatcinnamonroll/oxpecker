@@ -1,6 +1,7 @@
 import json
 import os
 from utils.configHelper import *
+from utils.mastodon import mastodonBot
 
 oxpeckerDir = os.getcwd()
 
@@ -129,9 +130,18 @@ class BotConfig:
             self._keepConfigLoop = False
         elif userInput.startswith("follow"):
             twitterAcc = splitedInput[1]
-            print("Please enter mastodon token for that twitter page (if you dont want to post to mastodon press enter)")
-            userToken = input(": ")
-            self.follow(twitterAcc,userToken)
+            with open(".data/userSettings.json",'r') as fingerPrintFile:
+                userSettings = json.load(fingerPrintFile)
+                mastodonAccountSettings = userSettings["mastodonBotsSettings"]
+                mastodonUrl = userSettings["mastodon"]
+                token = userSettings["manageAccountToken"]
+                browerFingerprint = userSettings["fingerprint"]
+            botToken = makeMastodonAccount(twitterAcc,mastodonAccountSettings,mastodonUrl,token)
+            print("Please paste this command in your gotosocial container in order to accept bot account")
+            print(f"./gotosocial admin account confirm --username {twitterAcc}")
+            input("When you are done press enter")
+
+
         elif userInput.startswith("unfollow"):
             twitterAcc = splitedInput[1]
             self.unFollow(twitterAcc)

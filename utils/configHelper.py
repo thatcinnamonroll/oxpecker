@@ -4,6 +4,8 @@ import json
 import time
 import requests
 from bs4 import BeautifulSoup
+import secrets
+import json
 
 def makeTwitterCacheFile():
     with sync_playwright() as playwright:
@@ -100,5 +102,64 @@ def setupSettingsFile(geolocale,locale,timezoneId,user_agent,nitter,mastodon,wai
         settingsJson = json.dumps(settings,indent=4)
         settingsFile.write(settingsJson)
     print("Settings saved")
+
+def makeMastodonAccount(username,accountSettings,botUrl,botToken):
+    shouldAskForPassword = accountSettings["userManagesPasswords"]
+    email = f"{username}{accountSettings["emailPrefix"]}"
+    if shouldAskForPassword:
+        password = input(f"Type password for bot account posting from twitter profile @{username}: ")
+    else:
+        password = secrets.token_urlsafe(40)
+
+    header = {'Authorization': f'Bearer {botToken}',
+                     'content-type':'application/json'}
+
+    data = {
+        "reason":f"Submitted by oxpecker bot this account will be used to repost stuff from twitter account @{username}",
+        "username":username,
+        "email":email,
+        "password":password,
+        "agreement":True
+        }
+
+    requestData = json.dumps(data).encode("utf-8")
+
+    response = requests.post(f"{botUrl}/api/v1/accounts",data=requestData,headers=header)
+    time.sleep(1) # wait for the request
+
+    if response.status_code == 200:
+        responseData = response.json()
+        botToken = responseData["access_token"]
+        print(f"Bot account for @{username} was successfully subbmited")
+        return botToken
+    else:
+        print(f"Something went wrong, Error code: {response.status_code}")
+        return None
+
+def setupMastodonAccount(token,url,fingerprint):
+    with sync_playwright() as playwright:
+        browser = playwright.firefox.launch()
+        context = browser.new_context(geolocation=fingerprint.get("geolocation"), locale=fingerprint.get("locale"), permissions=fingerprint.get("permissions"), storage_state=fingerprint.get("storage_state"), timezone_id=fingerprint.get("timezone_id"), user_agent=fingerprint.get("user_agent"))
+        page = context.new_page()
+
+
+
+
+    header = {'Authorization': f'Bearer {botToken}',
+                     'content-type':'application/json'}
+
+    data = {
+        "reason":f"Submitted by oxpecker bot this account will be used to repost stuff from twitter account @{username}",
+        "username":username,
+        "email":email,
+        "password":password,
+        "agreement":True
+        }
+
+    requestData = json.dumps(data).encode("utf-8")
+
+    response = requests.post(f"{botUrl}/api/v1/accounts",data=requestData,headers=header)
+    time.sleep(1) # wait for the request
+
 
 

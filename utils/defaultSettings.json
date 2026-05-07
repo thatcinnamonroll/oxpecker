@@ -11,5 +11,16 @@
     "waitTime": false,
     "debugMode": false,
     "postStatus":false,
-    "statusAccountToken":""
+    "statusAccountToken":"",
+    "manageAccountToken":"",
+    "mastodonBotsSettings":{
+        "emailPrefix":"@whateverYou.want",
+        "userManagesPasswords":false,
+        "discovarable":false,
+        "botAccount":true,
+        "locked":false,
+        "enable_rss":false,
+        "hide_collections_followers":true,
+        "web_visibility":"unlisted"
+    }
 }
