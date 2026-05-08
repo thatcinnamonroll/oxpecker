@@ -21,6 +21,7 @@
         "locked":false,
         "enable_rss":false,
         "hide_collections_followers":true,
-        "web_visibility":"unlisted"
+        "web_visibility":"unlisted",
+        "locale":""
     }
 }

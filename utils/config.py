@@ -1,7 +1,7 @@
 import json
 import os
 from utils.configHelper import *
-from utils.mastodon import mastodonBot
+from utils.mastodon import *
 
 oxpeckerDir = os.getcwd()
 
@@ -130,17 +130,28 @@ class BotConfig:
             self._keepConfigLoop = False
         elif userInput.startswith("follow"):
             twitterAcc = splitedInput[1]
+            twitterAccLowercase = twitterAcc.lower() # gotosocial does not accept uppercase usernames
+            addFooter = True
             with open(".data/userSettings.json",'r') as fingerPrintFile:
                 userSettings = json.load(fingerPrintFile)
                 mastodonAccountSettings = userSettings["mastodonBotsSettings"]
                 mastodonUrl = userSettings["mastodon"]
                 token = userSettings["manageAccountToken"]
                 browerFingerprint = userSettings["fingerprint"]
-            botToken = makeMastodonAccount(twitterAcc,mastodonAccountSettings,mastodonUrl,token)
+                nitter = userSettings["nitter"]
+            botToken = makeMastodonAccount(twitterAccLowercase,mastodonAccountSettings,mastodonUrl,token)
             print("Please paste this command in your gotosocial container in order to accept bot account")
-            print(f"./gotosocial admin account confirm --username {twitterAcc}")
+            print(f"./gotosocial admin account confirm --username {twitterAccLowercase}")
             input("When you are done press enter")
-
+            twitterAccInfo = getInfoAboutTwitterUser(twitterAcc,browerFingerprint,addFooter)
+            mastodonBot(botToken,mastodonUrl).updateAccountInfo(twitterAccInfo,mastodonAccountSettings,nitter,twitterAcc)
+            with open(".data/userFollowed.json","r") as followedFile:
+                userFollowed = json.load(followedFile)
+                userFollowed[twitterAcc] = botToken
+            with open(".data/userFollowed.json","w") as followedFile:
+                followedFileJson = json.dumps(userFollowed,indent=4)
+                followedFile.write(followedFileJson)
+            print(f"followed @{twitterAcc}")
 
         elif userInput.startswith("unfollow"):
             twitterAcc = splitedInput[1]

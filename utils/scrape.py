@@ -4,6 +4,30 @@ from playwright._impl._errors import TimeoutError as playwrightTimeout
 import random
 from bs4 import BeautifulSoup
 
+def scrapeProfileInfo(page):
+    soup = BeautifulSoup(page,"html.parser")
+
+    # reading displayname
+    usernameDiv = soup.find("div",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-adyw6z r-135wba7 r-1vr29t4 r-1awozwy r-6koalj r-1udh08x"})
+    usernameDivSoup = BeautifulSoup(str(usernameDiv),"html.parser")
+    spanDisplayname = usernameDivSoup.find_all("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+    displaynameUnformated = spanDisplayname[1]
+    displaynameSoup = BeautifulSoup(str(displaynameUnformated),"html.parser")
+    displayname = displaynameSoup.getText()
+
+    # reading account description
+    bioDir = soup.find("div",{"data-testid":"UserDescription"})
+    bioDirSoup = BeautifulSoup(str(bioDir),"html.parser")
+    bioUnformated = bioDirSoup.find("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
+    bio = bioUnformated.getText()
+
+    account = {}
+    account["displayname"] = displayname
+    account["bio"] = bio
+
+    return account
+
+
 class twitterScraper:
     def __init__(self,fingerprint,debugMode,nitter):
         self._geolocation=fingerprint.get("geolocation")
