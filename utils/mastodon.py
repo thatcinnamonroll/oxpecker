@@ -38,9 +38,10 @@ def makeMastodonAccount(username,accountSettings,botUrl,botToken):
         return None
 
 class mastodonBot:
-    def __init__(self,botToken,botUrl):
+    def __init__(self,botToken,botUrl,debugmode=False):
         self.botToken = botToken
         self.botUrl = botUrl
+        self.debugmode = debugmode
 
         # media in post func means list/array with open("path/to/file",'rb')
     def post(self,newPost,media=None):
@@ -54,12 +55,12 @@ class mastodonBot:
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}
         response = requests.post(f"{self.botUrl}/api/v1/statuses",data=requestData,headers=requestHeader)
         time.sleep(2) # to avoid race condition
-        # TODO add here debug mode check
-        if response.status_code == 200:
-            print("Posted!")
-        else:
-            print(f"Something went wrong, Error code: {response.status_code}")
-            print(response.content)
+        if self.debugmode:
+            if response.status_code == 200:
+                print("Posted!")
+            else:
+                print(f"Something went wrong, Error code: {response.status_code}")
+                print(response.content)
 
 
     def sendMedia(self,media):
@@ -72,7 +73,12 @@ class mastodonBot:
         else:
             imgId = None
         return imgId
-        # TODO add here debug mode
+        if self.debugmode:
+            if response.status_code == 200:
+                print("Img send")
+            else:
+                print(f"Something went wrong, Error code: {response.status_code}")
+                print(response.content)
 
     def updatePfp(self,pfp):
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}

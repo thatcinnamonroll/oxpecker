@@ -139,6 +139,7 @@ class BotConfig:
                 token = userSettings["manageAccountToken"]
                 browerFingerprint = userSettings["fingerprint"]
                 nitter = userSettings["nitter"]
+                debugmode = userSettings["debugMode"]
             botToken = makeMastodonAccount(twitterAccLowercase,mastodonAccountSettings,mastodonUrl,token)
             print("Please paste this command in your gotosocial container in order to accept bot account")
             print(f"./gotosocial admin account confirm --username {twitterAccLowercase}")
@@ -147,8 +148,10 @@ class BotConfig:
             # without the need to restart container :D
             print("Now please restart gotosocial container")
             input("When you are done press enter")
+            print(f"Reading basic info about @{twitterAcc}")
             twitterAccInfo = getInfoAboutTwitterUser(twitterAcc,browerFingerprint,addFooter)
-            mastodonBot(botToken,mastodonUrl).updateAccountInfo(twitterAccInfo,mastodonAccountSettings,nitter,twitterAcc)
+            print("Sending this info to bot account")
+            mastodonBot(botToken,mastodonUrl,debugmode).updateAccountInfo(twitterAccInfo,mastodonAccountSettings,nitter,twitterAcc)
             with open(".data/userFollowed.json","r") as followedFile:
                 userFollowed = json.load(followedFile)
                 userFollowed[twitterAcc] = botToken
