@@ -143,6 +143,10 @@ class BotConfig:
             print("Please paste this command in your gotosocial container in order to accept bot account")
             print(f"./gotosocial admin account confirm --username {twitterAccLowercase}")
             input("When you are done press enter")
+            # i've wasted whole WEEK thinking about it, reading Oauth docs etc. pls gotosocial devs fix accepting accounts
+            # without the need to restart container :D
+            print("Now please restart gotosocial container")
+            input("When you are done press enter")
             twitterAccInfo = getInfoAboutTwitterUser(twitterAcc,browerFingerprint,addFooter)
             mastodonBot(botToken,mastodonUrl).updateAccountInfo(twitterAccInfo,mastodonAccountSettings,nitter,twitterAcc)
             with open(".data/userFollowed.json","r") as followedFile:

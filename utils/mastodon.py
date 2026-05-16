@@ -52,8 +52,15 @@ class mastodonBot:
                 mediaList.append(mediaId)
             requestData['media_ids[]'] = mediaList
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}
-        requests.post(f"{self.botUrl}/api/v1/statuses",data=requestData,headers=requestHeader)
+        response = requests.post(f"{self.botUrl}/api/v1/statuses",data=requestData,headers=requestHeader)
         time.sleep(2) # to avoid race condition
+        # TODO add here debug mode check
+        if response.status_code == 200:
+            print("Posted!")
+        else:
+            print(f"Something went wrong, Error code: {response.status_code}")
+            print(response.content)
+
 
     def sendMedia(self,media):
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}
@@ -65,6 +72,7 @@ class mastodonBot:
         else:
             imgId = None
         return imgId
+        # TODO add here debug mode
 
     def updatePfp(self,pfp):
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}
@@ -81,7 +89,7 @@ class mastodonBot:
         displayname = accountInfo["displayname"]
         bio = accountInfo["bio"]
 
-        requestHeader = {'Authorization': f'Bearer {self.botToken}'}
+        requestHeader = {'Authorization': f'Bearer {self.botToken}','content-type':'application/json'}
 
         data = {
             "discoverable":discovarable,
@@ -103,7 +111,6 @@ class mastodonBot:
 
         if response.status_code == 200:
             responseData = response.json()
-            botToken = responseData["access_token"]
             print(f"Bot account for @{username} was successfully updated")
         else:
             print(f"Something went wrong, Error code: {response.status_code}")
