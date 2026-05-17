@@ -8,7 +8,12 @@
         "user_agent":"Your user agent"},
     "nitter": "Your preffered nitter instance",
     "mastodon":"Mastodon instance hosting your bots",
-    "waitTime": false,
+    "timeIntervals":{
+        "waitTime": false,
+        "randomize":false,
+        "upBarrier":86400,
+        "downBarrier":36000
+    },
     "debugMode": false,
     "postStatus":false,
     "statusAccountToken":"",

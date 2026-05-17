@@ -1,6 +1,7 @@
 from utils.mastodon import mastodonBot
 import json
 import requests
+import random
 
 def downloadImg(url):
     imgRequest = requests.get(url)
@@ -11,13 +12,14 @@ def downloadImg(url):
     return imgId
 
 class Bot:
-    def __init__(self,nitter,mastodon,cache,followed,waitTime):
+    def __init__(self,nitter,mastodon,cache,followed,waitTime,timeSettings):
         self._nitterInstance = nitter
         self._mastodon = mastodon
         self._cache = cache
         self._postedTweets = cache["posted"]
         self._followed = followed
         self._waitTime = waitTime
+        self._timeSettings = timeSettings
 
     def readAndPost(self,scrapedDataTwitter):
         # reading everything and posting to mastodon
@@ -91,4 +93,9 @@ class Bot:
             with open(".cache/cache.json","w") as cacheFile:
                 cacheJson = json.dumps(cacheData,indent=4)
                 cacheFile.write(cacheJson)
+
+    def randomizeTime(self):
+        upBarrier = self._timeSettings["upBarrier"]
+        downBarrier = self._timeSettings["downBarrier"]
+        self._waitTime = random.randint(downBarrier,upBarrier)
 

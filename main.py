@@ -30,10 +30,12 @@ with open(".data/userSettings.json",'r') as fingerPrintFile:
     userFingerprint = userSettings["fingerprint"]
     nitterInstance = userSettings["nitter"]
     mastodonInstance = userSettings["mastodon"]
-    waitTime = userSettings["waitTime"]
     debugMode = userSettings["debugMode"]
     postStatus = userSettings["postStatus"]
     postStatusApiKey = userSettings["statusAccountToken"]
+    timeSettings = userSettings["timeIntervals"]
+    timeRandomize = timeSettings["randomize"]
+    waitTime = timeSettings["waitTime"]
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
     userFollowedData = json.load(followedProfilesFile)
@@ -48,7 +50,7 @@ with open(".cache/cache.json","r") as cacheFile:
 if debugMode:
     print("WARNING: Debug mode on, extra logs will be made")
 
-oxpeckerBot = Bot(nitterInstance,mastodonInstance,cacheData,userFollowedData,waitTime)
+oxpeckerBot = Bot(nitterInstance,mastodonInstance,cacheData,userFollowedData,waitTime,timeSettings)
 twitter = twitterScraper(userFingerprint,debugMode,nitterInstance)
 
 if postStatus:
@@ -72,6 +74,9 @@ while True:
 
     if postStatus:
         statusBot.post("Work done going to sleep")
+
+    if timeRandomize:
+        oxpeckerBot.randomizeTime()
 
     if oxpeckerBot._waitTime == False: # if wait time will be set to false oxpecker will just turn itself off after one while loop
         sys.exit()
