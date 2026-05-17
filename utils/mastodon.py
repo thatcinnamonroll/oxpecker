@@ -80,10 +80,12 @@ class mastodonBot:
                 print(f"Something went wrong, Error code: {response.status_code}")
                 print(response.content)
 
-    def updatePfp(self,pfp):
+    def updatePfp(self,pfp,account):
         requestHeader = {'Authorization': f'Bearer {self.botToken}'}
+        pfpAltText = f"Avatar that @{account} uses on twitter/x"
         requestMedia = {'avatar':pfp}
-        request = requests.patch(f"{self.botUrl}/api/v1/accounts/update_credentials",files=requestMedia,headers=requestHeader)
+        requestData = {'avatar_description':pfpAltText}
+        request = requests.patch(f"{self.botUrl}/api/v1/accounts/update_credentials",files=requestMedia,data=requestData,headers=requestHeader)
 
     def updateAccountInfo(self,accountInfo,accountSettings,nitter,username):
         discovarable = accountSettings["discovarable"]

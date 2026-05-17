@@ -79,7 +79,7 @@ class Bot:
         if not mastodonPfp == pfpId:
             pfpRequest = requests.get(f"https://pbs.twimg.com/profile_images/{pfpIdWithSlashes}")
             open(f".cache/pfp/{pfpId}","wb").write(pfpRequest.content)
-            mastodonBot(mastodonToken,self._mastodon).updatePfp(open(f".cache/pfp/{pfpId}",'rb'))
+            mastodonBot(mastodonToken,self._mastodon).updatePfp(open(f".cache/pfp/{pfpId}",'rb'),account)
             cacheData["pfp"][account] = pfpId
             self._cache = cacheData
             with open(".cache/cache.json","w") as cacheFile:
