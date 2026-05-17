@@ -33,6 +33,7 @@ class Bot:
             self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
             tweets = scrapedDataTwitter[followed]["tweets"]
             tweets.reverse() # otherwise it posts tweets in the reverse order
+            addedAlert = False # alert such as "this is retweet"
             for tweet in tweets:
                 tweetStrList = []
                 mediaList = None
@@ -42,18 +43,23 @@ class Bot:
                     continue
                 if tweet["isRetweet"]:
                     tweetStrList.append(f"[This is retweet from {self._nitterInstance}/{tweet["authorUsername"]}]")
+                    addedAlert = True
                 if tweet["hasVideo"]:
                     tweetStrList.append("[This tweet has video]")
+                    addedAlert = True
                 if tweet["hasRef"]:
                     tweetStrList.append(f"[This tweet is refering to tweet written by {tweet["refTweetAuthorUsername"]}]")
+                    addedAlert = True
                 if not tweet["media"] == []:
                     mediaList = []
                     for mediaUrl in tweet["media"]:
                         mediaId = downloadImg(mediaUrl)
                         mediaOpen = open(f".cache/media/{mediaId}.jpg",'rb')
                         mediaList.append(mediaOpen)
+                if addedAlert:
+                    tweetStrList.append("\n\n") # separating alerts from rest of the tweet
                 tweetStrList.append(f" {tweet["text"]}")
-                tweetStrList.append(f"\n [Nitter URL: {self._nitterInstance}{tweet["url"]} ]")
+                tweetStrList.append(f"\n\n [Nitter URL: {self._nitterInstance}{tweet["url"]} ]")
                 tweetStr = "".join(tweetStrList)
                 mastodonBot(botApiKey,self._mastodon).post(tweetStr,mediaList)
                 self._postedTweets.append(tweet["id"])
