@@ -9,3 +9,6 @@ __pycache__
 
 # cache folder
 .cache
+
+# simple start shell script
+start.sh
