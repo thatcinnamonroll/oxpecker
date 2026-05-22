@@ -24,38 +24,6 @@ def makeTwitterCacheFile():
         context.close()
         browser.close()
 
-def insertAuthTokenCookie(auth_token):
-    # all val names here are the same as vals in auth_token cookie
-    name = "auth_token"
-    domain = ".x.com"
-    path = "/"
-    httpOnly = True
-    secure = True
-    sameSite = "None"
-    value = auth_token["value"]
-    expires = int(auth_token["expires"])
-
-    auth_token_cookie = {}
-    auth_token_cookie["name"] = name
-    auth_token_cookie["domain"] = domain
-    auth_token_cookie["value"] = value
-    auth_token_cookie["path"] = path
-    auth_token_cookie["httpOnly"] = httpOnly
-    auth_token_cookie["expires"] = expires
-    auth_token_cookie["secure"] = secure
-    auth_token_cookie["sameSite"] = sameSite
-
-    with open(".data/storage.json","r") as storageFile:
-        storage = json.load(storageFile)
-        cookiesList = storage["cookies"]
-        cookiesList.append(auth_token_cookie)
-        storage["cookies"] = cookiesList
-    with open(".data/storage.json","w") as storageFile:
-        storageJson = json.dumps(storage,indent=4)
-        storageFile.write(storageJson)
-
-    print("Cookies saved!")
-
 def getUserAgent():
     request = requests.get("https://www.useragents.me/")
     websiteHtml = request.content
@@ -81,27 +49,6 @@ def getUserAgent():
 
     userAgent = userSelectedUA["ua"]
     return userAgent
-
-def setupSettingsFile(geolocale,locale,timezoneId,user_agent,nitter,mastodon,waitTime):
-    with open(".data/userSettings.json","r") as settingsFile:
-        settings = json.load(settingsFile)
-
-        latitude = geolocale[0]
-        longitude = geolocale[1]
-
-        settings["fingerprint"]["geolocation"]["latitude"] = float(latitude)
-        settings["fingerprint"]["geolocation"]["longitude"] = float(longitude)
-        settings["fingerprint"]["locale"] = locale
-        settings["fingerprint"]["timezone_id"] = timezoneId
-        settings["fingerprint"]["user_agent"] = user_agent
-        settings["nitter"] = nitter
-        settings["mastodon"] = mastodon
-        settings["waitTime"] = waitTime
-
-    with open(".data/userSettings.json","w") as settingsFile:
-        settingsJson = json.dumps(settings,indent=4)
-        settingsFile.write(settingsJson)
-    print("Settings saved")
 
 def getInfoAboutTwitterUser(username,fingerprint,shouldAddFooter):
     footer = "[THIS IS NOT OFFICIAL ACCOUNT ITS ONLY A BOT THAT REPOSTS FROM TWITTER/X]"
