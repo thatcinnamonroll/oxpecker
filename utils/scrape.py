@@ -126,10 +126,10 @@ class twitterScraper:
     #        "url": str,  # url to that tweet
     #        "tweetId": str } # id of the tweet
         if self._debugMode:
-            with open(f".test/indexOf{account}.html","w") as firstIndex:
+            with open(f".cache/test/indexOf{account}.html","w") as firstIndex:
                 firstIndex.write(accHtml)
 
-            with open(f".test/indexOfPfp{account}.html","w") as pfpIndex:
+            with open(f".cache/test/indexOfPfp{account}.html","w") as pfpIndex:
                 pfpIndex.write(pfpPageHtml)
 
         for article in articlesHtml:
@@ -254,7 +254,7 @@ class twitterScraper:
             accountData["tweets"] = tweets
 
         if self._debugMode:
-            with open(f".test/scrapedDataOf{account}.txt","w") as scrapedFile:
+            with open(f".cache/test/scrapedDataOf{account}.txt","w") as scrapedFile:
                 scrapedFile.write(str(accountData))
 
         return accountData
