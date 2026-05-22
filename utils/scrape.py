@@ -58,9 +58,14 @@ class twitterScraper:
 
     def scrape(self,page,account):
         print(f"scraping @{account}")
-        page.goto(f"https://x.com/{account}")
-        time.sleep(9)
-
+        # looping over and over on page.goto, oxpecker crashed often having a timeout error
+        while True:
+            try:
+                page.goto(f"https://x.com/{account}")
+                time.sleep(9)
+            except playwrightTimeout:
+                print("Timeout error, going again")
+            break
         # getting page with profile pic
         page.get_by_role("link", name="Opens profile photo").click()
         time.sleep(1)
