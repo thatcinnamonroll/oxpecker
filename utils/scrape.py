@@ -74,7 +74,7 @@ class twitterScraper:
         time.sleep(0.5)
 
         pfpSoup = BeautifulSoup(pfpPageHtml,"html.parser")
-        pfpDiv = pfpSoup.find("div",{"class":"css-175oi2r r-1mlwlqe r-1udh08x r-417010 r-aqfbo4 r-n1ft60 r-gf0ln r-agouwx r-1p0dtai r-16l9doz r-1d2f490 r-pm9dpa r-dnmrzs r-u8s1d r-zchlnj r-ipm5af r-iyfy8q r-sdzlij r-1fdo3w0"})
+        pfpDiv = pfpSoup.find("div",{"class":"css-g5y9jx r-1mlwlqe r-1udh08x r-417010 r-aqfbo4 r-n1ft60 r-gf0ln r-agouwx r-1p0dtai r-16l9doz r-1d2f490 r-pm9dpa r-dnmrzs r-u8s1d r-zchlnj r-ipm5af r-iyfy8q r-sdzlij r-1fdo3w0"})
 
         pfpDivSoup = BeautifulSoup(str(pfpDiv),"html.parser")
         pfpImg = pfpDivSoup.find("img",{"class":"css-9pa8cd"})
@@ -131,7 +131,6 @@ class twitterScraper:
 
             with open(f".cache/test/indexOfPfp{account}.html","w") as pfpIndex:
                 pfpIndex.write(pfpPageHtml)
-
         for article in articlesHtml:
             strArticle = str(article)
             articleSoup = BeautifulSoup(strArticle,"html.parser")
@@ -166,7 +165,7 @@ class twitterScraper:
                 tweetStr = None
 
             # reading tweet author
-            tweetAuthorBar = articleSoup.find("div",{"class":"css-175oi2r r-k4xj1c r-18u37iz r-1wtj0ep"})
+            tweetAuthorBar = articleSoup.find("div",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q"})
             strTweetAuthorBar = str(tweetAuthorBar)
             authorTweetSoup = BeautifulSoup(strTweetAuthorBar,"html.parser")
             authorTweet = authorTweetSoup.find("span",{"class":"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"})
