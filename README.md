@@ -1,4 +1,5 @@
-[<img src="https://raw.githubusercontent.com/thatcinnamonroll/oxpecker/refs/heads/main/assets/logo.svg" align="right" height="100"/>]["https://github.com/thatcinnamonroll/oxpecker"]
+<img src="https://raw.githubusercontent.com/thatcinnamonroll/oxpecker/refs/heads/main/assets/logo.svg" align="right" height="110"/>
+<br>
 
 # oxpecker
 Mastodon bot that reposts content from Twitter or X
