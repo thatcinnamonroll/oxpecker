@@ -97,7 +97,7 @@ class mastodonBot:
         displayname = accountInfo["displayname"]
         bio = accountInfo["bio"]
 
-        requestHeader = {'Authorization': f'Bearer {self.botToken}','content-type':'application/json'}
+        requestHeader = {'Authorization': f'Bearer {self.botToken}'}
 
         data = {
             "discoverable":discovarable,
@@ -112,9 +112,7 @@ class mastodonBot:
             "fields_attributes[0][value]":f"{nitter}/{username}"
         }
 
-        requestData = json.dumps(data).encode("utf-8")
-
-        response = requests.patch(f"{self.botUrl}/api/v1/accounts/update_credentials",data=requestData,headers=requestHeader)
+        response = requests.patch(f"{self.botUrl}/api/v1/accounts/update_credentials",data=data,headers=requestHeader)
         time.sleep(2) # wait for request
 
         if response.status_code == 200:
