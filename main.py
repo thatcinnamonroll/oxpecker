@@ -60,9 +60,6 @@ print("ready to work")
 
 # main loop
 while True:
-    if postStatus:
-        statusBot.post("Started Work!")
-
     with sync_playwright() as playwright:
         tweetsDict = twitter.runScraper(playwright,userFollowed)
         print("Done Scraping :D")
@@ -81,5 +78,5 @@ while True:
     if oxpeckerBot._waitTime == False: # if wait time will be set to false oxpecker will just turn itself off after one while loop
         sys.exit()
 
-    print("Tweets scraped and posted going to sleep")
+    print("Tweets scraped and posted")
     time.sleep(oxpeckerBot._waitTime) # yes i know how it looks, i will make it better
