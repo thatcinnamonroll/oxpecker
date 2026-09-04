@@ -68,6 +68,7 @@ class BotConfig:
             print(": setup - initial setup")
             print(": exit - quit config mode and close oxpecker")
             print(": start - quit config mode and start oxpecker")
+            print(": post-status - make a post on status account (if you have one)")
         elif userInput == "exit":
             self._keepConfigLoop = False
         elif userInput == "start":
@@ -106,6 +107,8 @@ class BotConfig:
             print(f"followed @{twitterAcc}")
         elif userInput.startswith("setup"):
             self.setup()
+        elif userInput == "post-status":
+            postStatus()
 
 ensureCacheFiles()
 ensureDataFiles()

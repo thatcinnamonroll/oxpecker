@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from utils.scrape import scrapeProfileInfo
+from utils.mastodon import mastodonBot
 
 def makeTwitterCacheFile():
     with sync_playwright() as playwright:
@@ -72,3 +73,29 @@ def getInfoAboutTwitterUser(username,fingerprint,shouldAddFooter):
             info["bio"] = bio
 
         return info
+
+def postStatus():
+    with open(".data/userSettings.json","r") as settingsFile:
+        userSettings = json.load(settingsFile)
+    token = userSettings["statusAccountToken"]
+    mastodonUrl = userSettings["mastodon"]
+    debug = userSettings["debugMode"]
+
+    statusBot = mastodonBot(token,mastodonUrl,debug)
+
+    message = ""
+
+    while True:
+        print("Write Your message:")
+        message = input(": ")
+        print("Your message will look like this")
+        print(message)
+        userChoice = input("Do you want to post it? (y - yes, N - no, e - edit): ")
+        if userChoice == "y":
+            break
+        elif userChoice == "e":
+            continue
+        else:
+            return False
+
+    statusBot.post(message)
