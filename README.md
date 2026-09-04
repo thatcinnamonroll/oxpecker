@@ -1,12 +1,14 @@
-## oxpecker
+[<img src="https://raw.githubusercontent.com/thatcinnamonroll/oxpecker/refs/heads/main/assets/logo.svg" align="right" height="100"/>]["https://github.com/thatcinnamonroll/oxpecker"]
+
+# oxpecker
 Mastodon bot that reposts content from Twitter or X
 
 # How does that work?
 This bot runs on some server, it scrapes and posts tweets from selected accounts on twitter to corresponding bot accounts on Mastodon. That said
 having twitter account for this bot to use is a must have.
 
->**Disclaimer**\
-**Don't use any worthy twitter account for this bot as they can and probably will be banned** I don't take responsibility for any account bans got by using my software
+>[!WARNING]
+>**Don't use any worthy twitter account for this bot as they can and probably will be banned** I don't take responsibility for any account bans got by using my software
 
 # Why should i use it?
 **TBH you should not...** This is very alpha and something I work on when I'm bored. 
