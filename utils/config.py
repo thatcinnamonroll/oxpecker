@@ -69,6 +69,7 @@ class BotConfig:
             print(": exit - quit config mode and close oxpecker")
             print(": start - quit config mode and start oxpecker")
             print(": post-status - make a post on status account (if you have one)")
+            print(": enroll-nitter - change nitter url in all mastodon profiles bio")
         elif userInput == "exit":
             self._keepConfigLoop = False
         elif userInput == "start":
@@ -109,6 +110,8 @@ class BotConfig:
             self.setup()
         elif userInput == "post-status":
             postStatus()
+        elif userInput == "enroll-nitter":
+            enrollNitter()
 
 ensureCacheFiles()
 ensureDataFiles()

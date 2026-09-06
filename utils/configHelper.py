@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import json
 from utils.scrape import scrapeProfileInfo
 from utils.mastodon import mastodonBot
+from utils.util import makeListOfFollowed
 
 def makeTwitterCacheFile():
     with sync_playwright() as playwright:
@@ -99,3 +100,30 @@ def postStatus():
             return False
 
     statusBot.post(message)
+
+def enrollNitter():
+    with open(".data/userSettings.json","r") as settingsFile:
+        userSettings = json.load(settingsFile)
+    nitter = userSettings["nitter"]
+    mastodonUrl = userSettings["mastodon"]
+
+    with open(".data/userFollowed.json","r") as followedFile:
+        followed = json.load(followedFile)
+    followedList = makeListOfFollowed(followed)
+    for account in followedList:
+        requestHeader = {'Authorization': f'Bearer {followed[account]}'}
+
+        data = {
+            "fields_attributes[0][name]":"Official Profile",
+            "fields_attributes[0][value]":f"{nitter}/{account}"
+        }
+
+        response = requests.patch(f"{mastodonUrl}/api/v1/accounts/update_credentials",data=data,headers=requestHeader)
+        time.sleep(2) # wait for request
+
+        if response.status_code == 200:
+            responseData = response.json()
+            print(f"Nitter enroll for @{account} Done")
+        else:
+            print(f"Nitter enroll for @{account} Failed, status code: {response.status_code}")
+
