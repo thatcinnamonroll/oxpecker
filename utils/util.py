@@ -11,6 +11,12 @@ def downloadImg(url):
     open(f".cache/media/{imgId}.jpg","wb").write(imgRequest.content)
     return imgId
 
+def makeListOfFollowed(followed):
+    userFollowedList = []
+    for account in followed:
+        userFollowedList.append(account)
+    return userFollowedList
+
 class Bot:
     def __init__(self,nitter,mastodon,cache,followed,waitTime,timeSettings):
         self._nitterInstance = nitter

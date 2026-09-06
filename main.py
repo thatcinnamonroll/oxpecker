@@ -4,7 +4,7 @@ import time
 from playwright.sync_api import sync_playwright
 from utils.scrape import twitterScraper
 from utils.mastodon import mastodonBot
-from utils.util import Bot, downloadImg
+from utils.util import Bot, downloadImg, makeListOfFollowed
 from utils.config import BotConfig
 
 try:
@@ -38,10 +38,8 @@ with open(".data/userSettings.json",'r') as fingerPrintFile:
     waitTime = timeSettings["waitTime"]
 
 with open(".data/userFollowed.json","r") as followedProfilesFile:
-    userFollowedData = json.load(followedProfilesFile)
-    userFollowed = []
-    for account in userFollowedData:
-        userFollowed.append(account)
+    userFollowed = json.load(followedProfilesFile)
+    userFollowedList = makeListOfFollowed(userFollowed)
 
 with open(".cache/cache.json","r") as cacheFile:
     cacheData = json.load(cacheFile)
@@ -50,7 +48,7 @@ with open(".cache/cache.json","r") as cacheFile:
 if debugMode:
     print("WARNING: Debug mode on, extra logs will be made")
 
-oxpeckerBot = Bot(nitterInstance,mastodonInstance,cacheData,userFollowedData,waitTime,timeSettings)
+oxpeckerBot = Bot(nitterInstance,mastodonInstance,cacheData,userFollowed,waitTime,timeSettings)
 twitter = twitterScraper(userFingerprint,debugMode,nitterInstance)
 
 if postStatus:
@@ -61,7 +59,7 @@ print("ready to work")
 # main loop
 while True:
     with sync_playwright() as playwright:
-        tweetsDict = twitter.runScraper(playwright,userFollowed)
+        tweetsDict = twitter.runScraper(playwright,userFollowedList)
         print("Done Scraping :D")
 
     oxpeckerBot.readAndPost(tweetsDict)
