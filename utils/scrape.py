@@ -3,6 +3,7 @@ from playwright.sync_api import Playwright
 from playwright._impl._errors import TimeoutError as playwrightTimeout
 import random
 from bs4 import BeautifulSoup
+import json
 
 def scrapeProfileInfo(page):
     soup = BeautifulSoup(page,"html.parser")
@@ -27,7 +28,6 @@ def scrapeProfileInfo(page):
 
     return account
 
-
 class twitterScraper:
     def __init__(self,fingerprint,debugMode,nitter):
         self._geolocation=fingerprint.get("geolocation")
@@ -44,17 +44,14 @@ class twitterScraper:
         browser = playwright.firefox.launch()
         context = browser.new_context(geolocation=self._geolocation, locale=self._locale, permissions=self._permissions, storage_state=self._storage_state, timezone_id=self._timezone_id, user_agent=self._user_agent)
         page = context.new_page()
-        tweets = {}
+
         for acc in accountsList:
-            tweetList = self.scrape(page,acc)
-            tweets[acc] = tweetList
+            self.scrape(page,acc)
 
         context.storage_state(path=self._storage_state) # saving new cookies in case website updates something
 
         context.close()
         browser.close()
-
-        return tweets
 
     def scrape(self,page,account):
         print(f"scraping @{account}")
@@ -112,6 +109,9 @@ class twitterScraper:
         # list of all tweets
         tweets = []
 
+        # adding pfp url to metadata
+        metadata["pfp"] = pfpUrl
+
         # this is single object in tweets
     #    tweet = {
     #        "text": str, # text in tweet
@@ -131,6 +131,11 @@ class twitterScraper:
 
             with open(f".cache/test/indexOfPfp{account}.html","w") as pfpIndex:
                 pfpIndex.write(pfpPageHtml)
+
+        # release ram
+        accHtml = None
+        pfpPageHtml = None
+
         for article in articlesHtml:
             strArticle = str(article)
             articleSoup = BeautifulSoup(strArticle,"html.parser")
@@ -230,9 +235,6 @@ class twitterScraper:
             tweetAuthorUsername = listFromUrl[1]
             tweetId = listFromUrl[3]
 
-            # adding pfp url to metadata
-            metadata["pfp"] = pfpUrl
-
             # adding to tweets list
             tweet = {}
             tweet["text"] = tweetStr
@@ -249,14 +251,11 @@ class twitterScraper:
 
             tweets.append(tweet)
 
-            accountData["metadata"] = metadata
-            accountData["tweets"] = tweets
+        accountData["metadata"] = metadata
+        accountData["tweets"] = tweets
 
-        if self._debugMode:
-            with open(f".cache/test/scrapedDataOf{account}.txt","w") as scrapedFile:
-                scrapedFile.write(str(accountData))
-
-        return accountData
+        with open(f".cache/scrape/{account}-data.json","w") as scrapedFile:
+            scrapedFile.write(json.dumps(accountData, indent=4)) # indent=4 to make json look pretty
 
 
 

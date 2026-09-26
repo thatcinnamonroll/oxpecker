@@ -23,7 +23,7 @@ def ensureDataFiles():
     stockSettings = None
 
 def ensureCacheFiles():
-    cacheFolders = [f"{oxpeckerDir}/.cache",f"{oxpeckerDir}/.cache/media",f"{oxpeckerDir}/.cache/pfp",f"{oxpeckerDir}/.cache/test"]
+    cacheFolders = [f"{oxpeckerDir}/.cache",f"{oxpeckerDir}/.cache/media",f"{oxpeckerDir}/.cache/pfp",f"{oxpeckerDir}/.cache/test",f"{oxpeckerDir}/.cache/scrape"]
     for cacheFolder in cacheFolders:
         if not os.path.exists(cacheFolder):
             os.makedirs(cacheFolder)

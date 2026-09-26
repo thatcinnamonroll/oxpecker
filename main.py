@@ -59,10 +59,10 @@ print("ready to work")
 # main loop
 while True:
     with sync_playwright() as playwright:
-        tweetsDict = twitter.runScraper(playwright,userFollowedList)
+        twitter.runScraper(playwright,userFollowedList)
         print("Done Scraping :D")
 
-    oxpeckerBot.readAndPost(tweetsDict)
+    oxpeckerBot.readAndPost()
 
     # release the ram
     tweetsDict = None

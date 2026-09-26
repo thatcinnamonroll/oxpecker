@@ -27,19 +27,23 @@ class Bot:
         self._waitTime = waitTime
         self._timeSettings = timeSettings
 
-    def readAndPost(self,scrapedDataTwitter):
+    def readAndPost(self):
         # reading everything and posting to mastodon
-        for followed in scrapedDataTwitter:
+        for followed in self._followed:
             print(f"reading tweets from @{followed}")
             botApiKey = self._followed[followed]
-            pfpUrl = scrapedDataTwitter[followed]["metadata"]["pfp"]
+
+            with open(f".cache/scrape/{followed}-data.json","r") as scrapedDataTwitterFile:
+                scrapedDataTwitter = json.load(scrapedDataTwitterFile)
+
+            pfpUrl = scrapedDataTwitter["metadata"]["pfp"]
             postedTweetsCount = 0 # counting posted tweets
             # mainly for debugging, if some api key will be set to false it wont be posted on mastodon
             if botApiKey == False:
                 print(f"Skipped @{followed}, mastodon token set to false")
                 continue
             self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
-            tweets = scrapedDataTwitter[followed]["tweets"]
+            tweets = scrapedDataTwitter["tweets"]
             tweets.reverse() # otherwise it posts tweets in the reverse order
             addedAlert = False # alert such as "this is retweet"
             for tweet in tweets:
@@ -77,6 +81,9 @@ class Bot:
             self._cache["posted"] = self._postedTweets
             cacheJson = json.dumps(self._cache,indent=4)
             cacheFile.write(cacheJson)
+
+        # release ram
+        scrapedDataTwitter = None
 
     def updatePfpIfNotNewest(self,pfpUrl,account,mastodonToken):
         urlSeperated = pfpUrl.split("https://pbs.twimg.com/profile_images/")
