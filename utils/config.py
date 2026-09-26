@@ -8,18 +8,26 @@ oxpeckerDir = os.getcwd()
 def ensureDataFiles():
     if not os.path.exists(f"{oxpeckerDir}/.data"):
         os.makedirs(f"{oxpeckerDir}/.data")
-        with open(f"{oxpeckerDir}/utils/defaultSettings.json","r") as stockSettingsFile:
-            stockSettingsDir = json.load(stockSettingsFile)
-            stockSettings = json.dumps(stockSettingsDir)
+
+    with open(f"{oxpeckerDir}/utils/defaultSettings.json","r") as stockSettingsFile:
+        stockSettingsDir = json.load(stockSettingsFile)
+        stockSettings = json.dumps(stockSettingsDir)
+
+    if not os.path.isfile(f"{oxpeckerDir}/.data/userFollowed.json"):
         open(f"{oxpeckerDir}/.data/userFollowed.json","w").write("{}")
+    if not os.path.isfile(f"{oxpeckerDir}/.data/userSettings.json"):
         open(f"{oxpeckerDir}/.data/userSettings.json","w").write(stockSettings)
 
+    # release ram
+    stockSettingsDir = None
+    stockSettings = None
+
 def ensureCacheFiles():
-    if not os.path.exists(f"{oxpeckerDir}/.cache"):
-        os.makedirs(f"{oxpeckerDir}/.cache")
-        os.makedirs(f"{oxpeckerDir}/.cache/media")
-        os.makedirs(f"{oxpeckerDir}/.cache/pfp")
-        os.makedirs(f"{oxpeckerDir}/.cache/test")
+    cacheFolders = [f"{oxpeckerDir}/.cache",f"{oxpeckerDir}/.cache/media",f"{oxpeckerDir}/.cache/pfp",f"{oxpeckerDir}/.cache/test"]
+    for cacheFolder in cacheFolders:
+        if not os.path.exists(cacheFolder):
+            os.makedirs(cacheFolder)
+    if not os.path.isfile(f"{oxpeckerDir}/.cache/cache.json"):
         open(f"{oxpeckerDir}/.cache/cache.json","w").write('{   "posted":[],    "pfp":{}    }')
 
 class BotConfig:
