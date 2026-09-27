@@ -4,6 +4,7 @@ from playwright._impl._errors import TimeoutError as playwrightTimeout
 import random
 from bs4 import BeautifulSoup
 import json
+import datetime
 
 def scrapeProfileInfo(page):
     soup = BeautifulSoup(page,"html.parser")
@@ -123,6 +124,7 @@ class twitterScraper:
     #        "isPinned": bool , # is that tweet pinned
     #        "hasRef": bool, # if tweet is refering other tweet this will be true
     #        "refTweetAuthorUsername" : str/None, # if tweet is not refering to other tweets its None, otherwise its str with nitter url to ref tweet author profile
+    #        "time": float # time of posting tweet in unix
     #        "url": str,  # url to that tweet
     #        "tweetId": str } # id of the tweet
         if self._debugMode:
@@ -205,14 +207,16 @@ class twitterScraper:
                 isRetweet = True
 
             # getting tweet url
-            tweetMetadataBar = articleSoup.find("div",{"class":"css-175oi2r r-zl2h9q"})
-            strTweetMetadataBar = str(tweetMetadataBar)
-            tweetPostDateSoup = BeautifulSoup(strTweetMetadataBar,"html.parser")
-            tweetPostDate = articleSoup.find("a",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-xoduu5 r-1q142lx r-1w6e6rj r-9aw3ui r-3s2u2q r-1loqt21"})
+            tweetMetadata = articleSoup.find("a",{"class":"css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-xoduu5 r-1q142lx r-1w6e6rj r-9aw3ui r-3s2u2q r-1loqt21"})
             try:
-                tweetUrl = tweetPostDate["href"]
+                tweetUrl = tweetMetadata["href"]
             except TypeError:
                 tweetUrl = None
+
+            # getting tweet post date
+            tweetPostDate = articleSoup.find("time")
+            tweetPostDateInDatetime = datetime.datetime.fromisoformat(tweetPostDate["datetime"])
+            tweetPostDateInUnix = tweetPostDateInDatetime.timestamp()
 
             # checking if tweet is refering to another tweet
             hasRef = False
@@ -247,6 +251,7 @@ class twitterScraper:
             tweet["hasRef"] = hasRef
             tweet["refTweetAuthorUsername"] = refTweetAuthorUsername
             tweet["url"] = tweetUrl
+            tweet["time"] = tweetPostDateInUnix
             tweet["id"] = tweetId
 
             tweets.append(tweet)
