@@ -61,5 +61,5 @@ def sortTweetsAndRetweets(account,metadata):
     sortedTweets = None
 
     with open(f".cache/scrape/{account}-data.json","w") as scrapedFile:
-        scrapedFile.write(json.dumps(accountData, indent=4)) # indent=4 to make json look pretty
+        scrapedFile.write(json.dumps(accountData))
     accountData = None

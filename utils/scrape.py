@@ -73,7 +73,7 @@ class twitterScraper:
 
             originalTweets = self.scrape(accHtml,acc)
             with open(f".cache/scrape/{acc}-tweets.json","w") as scrapedFile:
-                scrapedFile.write(json.dumps(originalTweets, indent=4)) # indent=4 to make json look pretty
+                scrapedFile.write(json.dumps(originalTweets))
 
             # release ram
             accHtml = None
@@ -90,7 +90,7 @@ class twitterScraper:
 
             retweets = self.scrape(retweetAccHtml,acc)
             with open(f".cache/scrape/{acc}-retweets.json","w") as scrapedFile:
-                scrapedFile.write(json.dumps(retweets, indent=4)) # indent=4 to make json look pretty
+                scrapedFile.write(json.dumps(retweets))
 
             accountsMetadata[acc] = metadata
 
@@ -171,7 +171,7 @@ class twitterScraper:
             # cheking is it retweet or pinned post
             isRetweet = False
             isPinned = False
-            reTweetAndPinnedBar = articleSoup.find("div",{"class":"css-175oi2r"})
+            reTweetAndPinnedBar = articleSoup.find("div",{"class":"css-g5y9jx"})
             strReTweetAndPinnedBar = str(reTweetAndPinnedBar)
 
             upperTweetBarSoup = BeautifulSoup(strReTweetAndPinnedBar,"html.parser")
