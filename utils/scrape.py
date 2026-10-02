@@ -5,6 +5,7 @@ import random
 from bs4 import BeautifulSoup
 import json
 import datetime
+from utils.scrapeHelper import *
 
 def scrapeProfileInfo(page):
     soup = BeautifulSoup(page,"html.parser")
@@ -45,98 +46,72 @@ class twitterScraper:
         browser = playwright.firefox.launch()
         context = browser.new_context(geolocation=self._geolocation, locale=self._locale, permissions=self._permissions, storage_state=self._storage_state, timezone_id=self._timezone_id, user_agent=self._user_agent)
         page = context.new_page()
+        accountsMetadata = {}
 
         for acc in accountsList:
-            self.scrape(page,acc)
+            print(f"scraping @{acc}")
+            # looping over and over on page.goto, oxpecker crashed often having a timeout error
+            while True:
+                try:
+                    page.goto(f"https://x.com/{acc}")
+                    time.sleep(9)
+                except playwrightTimeout:
+                    print("Timeout error, going again")
+                break
+            # data of scraped account
+            accountData = {}
+            metadata = {}
+
+            pfpUrl = getPfpUrl(acc,page,self._debugMode)
+            metadata["pfp"] = pfpUrl
+            loadMoreTweets(page)
+            accHtml = page.content()
+
+            if self._debugMode:
+                with open(f".cache/test/indexOf{acc}.html","w") as firstIndex:
+                    firstIndex.write(accHtml)
+
+            originalTweets = self.scrape(accHtml,acc)
+            with open(f".cache/scrape/{acc}-tweets.json","w") as scrapedFile:
+                scrapedFile.write(json.dumps(originalTweets, indent=4)) # indent=4 to make json look pretty
+
+            # release ram
+            accHtml = None
+            originalTweets = None
+
+            # switch to retweets
+            page.get_by_role("tab", name="Reposts").click()
+            loadMoreTweets(page)
+            retweetAccHtml = page.content()
+
+            if self._debugMode:
+                with open(f".cache/test/indexOfRetweetsOf{acc}.html","w") as firstIndex:
+                    firstIndex.write(retweetAccHtml)
+
+            retweets = self.scrape(retweetAccHtml,acc)
+            with open(f".cache/scrape/{acc}-retweets.json","w") as scrapedFile:
+                scrapedFile.write(json.dumps(retweets, indent=4)) # indent=4 to make json look pretty
+
+            accountsMetadata[acc] = metadata
+
+            # release ram
+            metadata = None
 
         context.storage_state(path=self._storage_state) # saving new cookies in case website updates something
 
         context.close()
         browser.close()
 
-    def scrape(self,page,account):
-        print(f"scraping @{account}")
-        # looping over and over on page.goto, oxpecker crashed often having a timeout error
-        while True:
-            try:
-                page.goto(f"https://x.com/{account}")
-                time.sleep(9)
-            except playwrightTimeout:
-                print("Timeout error, going again")
-            break
-        # getting page with profile pic
-        page.get_by_role("link", name="Opens profile photo").click()
-        time.sleep(1)
-        pfpPageHtml = page.content()
-        page.get_by_role("button", name="Close").click()
-        time.sleep(0.5)
+        for acc in accountsList:
+            print(f"Sorting @{acc} tweets")
+            sortTweetsAndRetweets(acc,accountsMetadata[acc])
+        accountsMetadata = {}
 
-        pfpSoup = BeautifulSoup(pfpPageHtml,"html.parser")
-        pfpDiv = pfpSoup.find("div",{"class":"css-g5y9jx r-1mlwlqe r-1udh08x r-417010 r-aqfbo4 r-n1ft60 r-gf0ln r-agouwx r-1p0dtai r-16l9doz r-1d2f490 r-pm9dpa r-dnmrzs r-u8s1d r-zchlnj r-ipm5af r-iyfy8q r-sdzlij r-1fdo3w0"})
-
-        pfpDivSoup = BeautifulSoup(str(pfpDiv),"html.parser")
-        pfpImg = pfpDivSoup.find("img",{"class":"css-9pa8cd"})
-        pfpUrl = pfpImg["src"]
-
-        # relese ram
-        pfpSoup = None
-        pfpDiv = None
-        pfpDivSoup = None
-        pfpImg = None
-
-        # scrolling so browser loads more content
-        scrollNum = 0
-        while scrollNum < 20:
-            page.mouse.wheel(0,120)
-            time.sleep(0.3)
-            scrollNum += 1
-
-        # clicking "show more" buttons to get full tweet
-        showMoreButtons = page.get_by_test_id("tweet-text-show-more-link").all()
-        for button in showMoreButtons:
-            try:
-                button.click()
-            except playwrightTimeout:
-                continue
-            time.sleep(0.1)
-
-        accHtml = page.content()
-        soup = BeautifulSoup(accHtml,"html.parser")
+    def scrape(self,pageHtml,account):
+        soup = BeautifulSoup(pageHtml,"html.parser")
         articlesHtml = soup.find_all('article')
 
-        # data of scraped account
-        accountData = {}
-        metadata = {}
-        # list of all tweets
         tweets = []
-
-        # adding pfp url to metadata
-        metadata["pfp"] = pfpUrl
-
-        # this is single object in tweets
-    #    tweet = {
-    #        "text": str, # text in tweet
-    #        "author": str, # author bc tweet can be reposted from someone
-    #        "authorUsername": str, # writers @at
-    #        "media": [],  # multimedia urls
-    #        "hasVideo": bool, # does tweet has video in it
-    #        "isRetweet": bool,  # is that tweet is a retweet
-    #        "isPinned": bool , # is that tweet pinned
-    #        "hasRef": bool, # if tweet is refering other tweet this will be true
-    #        "refTweetAuthorUsername" : str/None, # if tweet is not refering to other tweets its None, otherwise its str with nitter url to ref tweet author profile
-    #        "time": float # time of posting tweet in unix
-    #        "url": str,  # url to that tweet
-    #        "tweetId": str } # id of the tweet
-        if self._debugMode:
-            with open(f".cache/test/indexOf{account}.html","w") as firstIndex:
-                firstIndex.write(accHtml)
-
-            with open(f".cache/test/indexOfPfp{account}.html","w") as pfpIndex:
-                pfpIndex.write(pfpPageHtml)
-
-        # release ram
-        accHtml = None
-        pfpPageHtml = None
 
         for article in articlesHtml:
             strArticle = str(article)
@@ -256,11 +231,9 @@ class twitterScraper:
 
             tweets.append(tweet)
 
-        accountData["metadata"] = metadata
-        accountData["tweets"] = tweets
+        return tweets
 
-        with open(f".cache/scrape/{account}-data.json","w") as scrapedFile:
-            scrapedFile.write(json.dumps(accountData, indent=4)) # indent=4 to make json look pretty
+
 
 
 

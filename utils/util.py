@@ -44,7 +44,6 @@ class Bot:
                 continue
             self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
             tweets = scrapedDataTwitter["tweets"]
-            tweets.reverse() # otherwise it posts tweets in the reverse order
             addedAlert = False # alert such as "this is retweet"
             for tweet in tweets:
                 tweetStrList = []
