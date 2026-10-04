@@ -37,6 +37,19 @@ def makeMastodonAccount(username,accountSettings,botUrl,botToken):
         print(f"Something went wrong, Error code: {response.status_code}")
         return None
 
+def checkIfAccountExists(botToken,username,mastUrl):
+    doesExist = False
+    header = {'Authorization': f'Bearer {botToken}','content-type':'application/json'}
+
+    response = requests.get(f"{mastUrl}/api/v1/accounts/lookup",params={'acct':username},headers=header)
+    time.sleep(1) # wait for the request
+
+    # if server returns code 200 it means account with that username exists
+    if response.status_code == 200:
+        doesExist = True
+
+    return doesExist
+
 class mastodonBot:
     def __init__(self,botToken,botUrl,debugmode=False):
         self.botToken = botToken

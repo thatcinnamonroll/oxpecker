@@ -95,6 +95,11 @@ class BotConfig:
                 browerFingerprint = userSettings["fingerprint"]
                 nitter = userSettings["nitter"]
                 debugmode = userSettings["debugMode"]
+            doesExist = checkIfAccountExists(token,twitterAccLowercase,mastodonUrl)
+            if doesExist == True:
+                print("Cant follow that account")
+                print(f"Account with username @{twitterAccLowercase} already exists on this mastodon instance")
+                return
             botToken = makeMastodonAccount(twitterAccLowercase,mastodonAccountSettings,mastodonUrl,token)
             print("Please paste this command in your gotosocial container in order to accept bot account")
             print(f"./gotosocial admin account confirm --username {twitterAccLowercase}")
