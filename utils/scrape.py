@@ -103,7 +103,7 @@ class twitterScraper:
         browser.close()
 
         for acc in accountsList:
-            print(f"Sorting @{acc} tweets")
+            print(f"sorting @{acc} tweets")
             sortTweetsAndRetweets(acc,accountsMetadata[acc])
         accountsMetadata = {}
 
