@@ -42,7 +42,10 @@ class Bot:
             if botApiKey == False:
                 print(f"Skipped @{followed}, mastodon token set to false")
                 continue
-            self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
+            if pfpUrl == None:
+                print(f"Scraping pfp of @{followed} failed, skipping for this scrape")
+            else:
+                self.updatePfpIfNotNewest(pfpUrl,followed,botApiKey)
             tweets = scrapedDataTwitter["tweets"]
             addedAlert = False # alert such as "this is retweet"
             for tweet in tweets:

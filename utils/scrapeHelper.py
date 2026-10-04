@@ -16,7 +16,9 @@ def getPfpUrl(account,page,debugMode):
 
     pfpDivSoup = BeautifulSoup(str(pfpDiv),"html.parser")
     pfpImg = pfpDivSoup.find("img",{"class":"css-9pa8cd"})
-    pfpUrl = pfpImg["src"]
+    pfpUrl = None
+    if not pfpImg == None:
+        pfpUrl = pfpImg["src"]
 
     if debugMode:
         with open(f".cache/test/indexOfPfp{account}.html","w") as pfpIndex:
